@@ -312,3 +312,105 @@ int main() {
     return 0;
 }
 // } Driver Code Ends
+
+
+
+
+/*
+678. Valid Parenthesis String
+Solved
+Medium
+Topics
+Companies
+Hint
+Given a string s containing only three types of characters: '(', ')' and '*', return true if s is valid
+The following rules define a valid string:
+
+Any left parenthesis '(' must have a corresponding right parenthesis ')'.
+Any right parenthesis ')' must have a corresponding left parenthesis '('.
+Left parenthesis '(' must go before the corresponding right parenthesis ')'.
+'*' could be treated as a single right parenthesis ')' or a single left parenthesis '(' or an empty string "".
+ 
+
+Example 1:
+
+Input: s = "()"
+Output: true
+Example 2:
+
+Input: s = "(*)"
+Output: true
+Example 3:
+
+Input: s = "(*))"
+Output: true
+ 
+
+Constraints:
+
+1 <= s.length <= 100
+s[i] is '(', ')' or '*'.
+*/
+
+
+class Solution {
+public:
+    bool checkValidString(string s) {
+        stack<char> so;
+        stack<char> ss;
+        for(int i=0; i<s.length(); i++){
+            if(s[i]=='('){
+                so.push('(');
+            }
+            else if(s[i]=='*'){
+                ss.push('*');
+            }
+            else{
+                if(so.empty() && ss.empty()){
+                    return false;
+                }
+                else if(so.empty()){
+                    ss.pop();
+                }
+                else{
+                    so.pop();
+                }
+            }
+        }
+        if(ss.size()==so.size() || so.empty()){
+            return true;
+        }else{
+            return false;
+        }
+    }
+};
+
+
+class Solution {
+public:
+    bool checkValidString(string s) {
+        int mn = 0, mx = 0;
+        
+        for (char c : s) {
+            if (c == '(') {
+                // Treat `(` as increasing both min and max open parentheses needed.
+                mn++;
+                mx++;
+            } else if (c == '*') {
+                // `*` could be `(`, `)`, or an empty string.
+                if (mn > 0) mn--;  // Decrease mn as if `*` could close an open parenthesis
+                mx++;               // Increase max, as `*` could also be an open parenthesis
+            } else {
+                // For `)`, attempt to close an open parenthesis.
+                if (mn > 0) mn--;
+                mx--;
+            }
+            
+            // If `mx` is negative, too many `)` have been encountered.
+            if (mx < 0) return false;
+        }
+        
+        // Return true if all open parentheses could be closed.
+        return mn == 0;
+    }
+};
