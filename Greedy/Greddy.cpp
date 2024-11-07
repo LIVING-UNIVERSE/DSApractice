@@ -414,3 +414,27 @@ public:
         return mn == 0;
     }
 };
+
+
+// valid parenthesis with DP 
+
+/*
+
+
+
+
+                 spce for valid parenthesis solution with DP 
+
+
+
+
+
+*/
+
+
+
+
+
+
+
+
