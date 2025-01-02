@@ -399,3 +399,113 @@
 //         }
 //         return prev;
 //     }
+
+
+
+
+
+
+// //Geek's Training
+// Difficulty: MediumAccuracy: 49.98%Submissions: 91K+Points: 4
+// Geek is going for a training program. He can perform any of these activities: Running, Fighting, and Learning Practice. Each activity has some point on each day. As Geek wants to improve all his skills, he can't do the same activity on two consecutive days. Help Geek to maximize his merit points as you are given a 2D array of points arr, corresponding to each day and activity.
+
+// Example:
+// Input: n = 3 and arr[]= [[1,2,5],[3,1,1],[3,3,3]]
+// Output:11
+// Explanation: Geek will learn a new move and earn 5 point then on second day he will do running and earn 3 point and on third day he will do fighting and earn 3 points so, maximum point is 11.
+// Constraint:
+// 1 <=  arr.size <= 105
+// 1 <=  arr[i][j] <= 100
+
+
+
+// // top down appraoch
+// int f(int day,int act,vector<vector<int>> &arr,vector<vector<int>> &dp){
+//         if(day==0){
+//             int res=0;
+//             for(int i=0; i<3; i++){
+//                 if(i!=act){
+//                     res=max(res,arr[day][i]);
+                    
+//                 }
+//             }
+            
+//             return dp[day][act]=res;
+//         }
+//         if(dp[day][act]!=-1) return dp[day][act];
+//         int res=0;
+//         for(int i=0; i<3; i++){
+//             if(i!=act){
+//                 int cash= f(day-1,i,arr,dp)+arr[day][i];
+//                 res=max(res,cash);
+//             }
+//         }
+//         return dp[day][act]= res;
+//     }
+//   public:
+//     int maximumPoints(vector<vector<int>>& arr, int n) {
+//         vector<vector<int>> dp(n+1,vector<int>(4,-1));
+//         return f(n-1,3,arr,dp);
+//     }
+
+
+
+// bottoms up
+// public:
+//     int maximumPoints(vector<vector<int>>& arr, int n) {
+//         // bottom's up approach
+//         vector<vector<int>> dp(n,vector<int>(4,-1));
+//         dp[0][0]= max(arr[0][1],arr[0][2]);
+//         dp[0][1]= max(arr[0][0],arr[0][2]);
+//         dp[0][2]= max(arr[0][1],arr[0][0]);
+//         dp[0][3]= max(arr[0][1],max(arr[0][0],arr[0][2]));
+        
+//         for(int i=1; i<n; i++){
+//             for(int j=0; j<4; j++){
+//                 int res=0;
+//                 for(int k=0; k<3; k++){
+//                     if(k!=j){
+//                         int cash= dp[i-1][k] +arr[i][k];
+//                         res=max(res,cash);
+//                     }
+//                 }
+//                 dp[i][j]= res;
+//             }
+//         }
+//         return dp[n-1][3];
+//      }
+
+
+// // bottoms up(space optimization)
+//  public:
+//     int maximumPoints(vector<vector<int>>& arr, int n) {
+//         // bottom's up approach
+//         // vector<vector<int>> dp(n,vector<int>(4,-1));
+//         vector<int> dp(4,-1);
+//         dp[0]= max(arr[0][1],arr[0][2]);
+//         dp[1]= max(arr[0][0],arr[0][2]);
+//         dp[2]= max(arr[0][1],arr[0][0]);
+//         dp[3]= max(arr[0][1],max(arr[0][0],arr[0][2]));
+        
+//         for(int i=1; i<n; i++){
+//             vector<int> temp(4,-1);
+//             for(int j=0; j<4; j++){
+//                 int res=0;
+//                 for(int k=0; k<3; k++){
+//                     if(k!=j){
+//                         int cash= dp[k] +arr[i][k];
+//                         res=max(res,cash);
+//                     }
+//                 }
+//                 temp[j]= res;
+//             }
+//             dp=temp;
+            
+//         }
+//         return dp[3];
+//      }
+
+
+
+
+
