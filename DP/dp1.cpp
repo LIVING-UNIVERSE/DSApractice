@@ -308,10 +308,7 @@ public:
         return dp[(n - 1) % k]; // The result is in the index corresponding to the last stone
     }
 };
-
-
-
-
+      
 
 
 
@@ -734,3 +731,117 @@ public:
         }
         return prev[n-1];
     }
+
+
+
+////64. Minimum Path Sum
+Solved
+Medium
+Topics
+Companies
+Amazon
+Microsoft
+Google
+Goldman Sachs
+Oracle
+Given a m x n grid filled with non-negative numbers, find a path from top left to bottom right, which minimizes the sum of all numbers along its path.
+
+Note: You can only move either down or right at any point in time.
+
+ 
+
+Example 1:
+
+
+Input: grid = [[1,3,1],[1,5,1],[4,2,1]]
+Output: 7
+Explanation: Because the path 1 → 3 → 1 → 1 → 1 minimizes the sum.
+Example 2:
+
+Input: grid = [[1,2,3],[4,5,6]]
+Output: 12
+ 
+
+Constraints:
+
+m == grid.length
+n == grid[i].length
+1 <= m, n <= 200
+0 <= grid[i][j] <= 200
+
+
+
+
+
+// top down approach
+class Solution {
+private:
+    int f(int row, int col,vector<vector<int>>& dp,vector<vector<int>>& grid){
+        if(row==0 && col==0) return grid[0][0];
+        if(dp[row][col]!=-1) return dp[row][col];
+        int up=1e8,left=1e8;
+        if(row>0) up=f(row-1,col,dp,grid)+grid[row][col];
+        if(col>0) left=f(row,col-1,dp,grid)+grid[row][col];
+        return dp[row][col]=min(up,left);
+    }
+public:
+    int minPathSum(vector<vector<int>>& grid) {
+        int m=grid.size();
+        int n=grid[0].size();
+        vector<vector<int>> dp(m,vector<int>(n,-1));
+        return f(m-1,n-1,dp,grid);
+    }
+};
+
+
+// bottoms up approach
+class Solution {
+
+public:
+    int minPathSum(vector<vector<int>>& grid) {
+        int m=grid.size();
+        int n=grid[0].size();
+        vector<vector<int>> dp(m,vector<int>(n,-1));
+        for(int row=0; row<m;row++){
+            for(int col=0; col<n; col++){
+                if(row==0 && col==0) {dp[row][col]=grid[row][col];}
+                else{
+                    int left=1e8,up=1e8;
+                    if(row>0) {up=dp[row-1][col]+grid[row][col];}
+                    if(col>0) {left = dp[row][col-1] +grid[row][col];}
+                    dp[row][col]=min(up,left);
+                }
+            }
+        }
+        return dp[m-1][n-1];
+    }
+};
+
+
+
+
+// bottoms up space optimized
+class Solution {
+
+public:
+    int minPathSum(vector<vector<int>>& grid) {
+        int m=grid.size();
+        int n=grid[0].size();
+        // vector<vector<int>> dp(m,vector<int>(n,-1));
+        vector<int> prev(n,1e8);
+        for(int row=0; row<m;row++){
+            vector<int> curr(n,0);
+            for(int col=0; col<n; col++){
+                if(row==0 && col==0) {curr[0]=grid[row][col];}
+                else{
+                    int left=1e8,up=1e8;
+                    if(row>0) {up=prev[col]+grid[row][col];}
+                    if(col>0) {left =curr[col-1] +grid[row][col];}
+                    curr[col]=min(up,left);
+                }
+            }
+            prev=curr;
+        }
+        return prev[n-1];
+    }
+};
