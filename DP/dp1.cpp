@@ -845,3 +845,110 @@ public:
         return prev[n-1];
     }
 };
+
+
+
+
+//120. Triangle
+Medium
+Topics
+Companies
+Given a triangle array, return the minimum path sum from top to bottom.
+
+For each step, you may move to an adjacent number of the row below. More formally, if you are on index i on the current row, you may move to either index i or index i + 1 on the next row.
+
+ 
+
+Example 1:
+
+Input: triangle = [[2],[3,4],[6,5,7],[4,1,8,3]]
+Output: 11
+Explanation: The triangle looks like:
+   2
+  3 4
+ 6 5 7
+4 1 8 3
+The minimum path sum from top to bottom is 2 + 3 + 5 + 1 = 11 (underlined above).
+Example 2:
+
+Input: triangle = [[-10]]
+Output: -10
+ 
+
+Constraints:
+
+1 <= triangle.length <= 200
+triangle[0].length == 1
+triangle[i].length == triangle[i - 1].length + 1
+-104 <= triangle[i][j] <= 104
+ 
+
+Follow up: Could you do this using only O(n) extra space, where n is the total number of rows in the triangle?
+
+
+
+// top down approach
+private:
+    int f(int row,int col, int m,int n,vector<vector<int>>& dp,vector<vector<int>>& grid){
+        if(row==m-1) {return grid[row][col];}
+        if(dp[row][col]!=-1) {return dp[row][col];}
+        int down = f(row+1,col,m,n,dp,grid) + grid[row][col];
+        int diag = f(row+1,col+1,m,n,dp,grid) + grid[row][col];
+        return dp[row][col]=min(down,diag);
+    }
+
+public:
+    int minimumTotal(vector<vector<int>>& grid) {
+        int m=grid.size();
+        int n=grid[0].size();
+        vector<vector<int>> dp(m,vector<int>(n,-1));
+        return f(0,0,m,n,dp,grid);
+    }
+
+
+
+// bottoms up approach
+class Solution {
+public:
+    int minimumTotal(vector<vector<int>>& grid) {
+        int m=grid.size();
+        vector<vector<int>> dp(m,vector<int>(m,-1));
+        for(int i=0; i<m; i++){
+            dp[m-1][i]=grid[m-1][i];
+        }
+        for(int row=m-2; row>=0; row--){
+            for(int col=row; col>=0; col--){
+                int down= dp[row+1][col] +grid[row][col];
+                int diag= dp[row+1][col+1] +grid[row][col];
+                dp[row][col]=min(down,diag);
+            }
+        }
+        return dp[0][0];
+    }
+};
+
+
+
+
+// bottoms up (space optimization)
+class Solution {
+public:
+    int minimumTotal(vector<vector<int>>& grid) {
+        int m=grid.size();
+        vector<int> prev(m,-1);
+        for(int i=0; i<m; i++){
+            prev[i]=grid[m-1][i];
+        }
+        for(int row=m-2; row>=0; row--){
+            vector<int> temp(m,0);
+            for(int col=row; col>=0; col--){
+                int down= prev[col] +grid[row][col];
+                int diag= prev[col+1] +grid[row][col];
+                temp[col]=min(down,diag);
+            }
+            prev=temp;
+        }
+        return prev[0];
+    }
+};
+
