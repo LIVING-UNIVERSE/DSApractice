@@ -952,3 +952,119 @@ public:
     }
 };
 
+
+
+
+
+// 931. Minimum Falling Path Sum
+Attempted
+Medium
+Topics
+Companies
+Given an n x n array of integers matrix, return the minimum sum of any falling path through matrix.
+
+A falling path starts at any element in the first row and chooses the element in the next row that is either directly below or diagonally left/right. Specifically, the next element from position (row, col) will be (row + 1, col - 1), (row + 1, col), or (row + 1, col + 1).
+
+ 
+
+Example 1:
+
+
+Input: matrix = [[2,1,3],[6,5,4],[7,8,9]]
+Output: 13
+Explanation: There are two falling paths with a minimum sum as shown.
+Example 2:
+
+
+Input: matrix = [[-19,57],[-40,-5]]
+Output: -59
+Explanation: The falling path with a minimum sum is shown.
+ 
+
+Constraints:
+
+n == matrix.length == matrix[i].length
+1 <= n <= 100
+-100 <= matrix[i][j] <= 100
+
+
+
+// top down approach
+class Solution {
+private:
+    int f(int row,int col,int m,vector<vector<int>>& dp,vector<vector<int>>& grid){
+        if(col<0 || col>=m) return 1e8;
+        if(row==m-1) return grid[row][col];
+        if(dp[row][col]!=-1) return dp[row][col];
+        int d1=f(row+1,col-1,m,dp,grid) +grid[row][col];
+        int d2=f(row+1,col,m,dp,grid) +grid[row][col];
+        int d3=f(row+1,col+1,m,dp,grid) +grid[row][col];
+        return dp[row][col]= min(d1,min(d2,d3));
+    }
+public:
+    int minFallingPathSum(vector<vector<int>>& grid) {
+        int m= grid.size();
+        vector<vector<int>> dp(m,vector<int>(m,-1));
+        int res=1e8;
+        for(int i=m-1; i>=0; i--){
+            res=min(res,f(0,i,m,dp,grid));
+        }
+        return res;
+    }
+};
+
+
+// bottoms up approach
+class Solution {
+public:
+    int minFallingPathSum(vector<vector<int>>& grid) {
+        int m=grid.size();
+        vector<vector<int>> dp(m,vector<int>(m,-1));
+        for(int i=0; i<m; i++){
+            dp[m-1][i]=grid[m-1][i];
+        }
+        for(int row=m-2; row>=0; row--){
+            for(int col=0; col<m; col++){
+                int d1=dp[row+1][col]+grid[row][col];
+                int d2=1e8,d3=1e8;
+                if(col+1<m) d2=dp[row+1][col+1] + grid[row][col];
+                if(col-1>=0) d3=dp[row+1][col-1] + grid[row][col];
+                dp[row][col]=min(d1,min(d2,d3));
+            }
+        }
+        int res=1e8;
+        for(int i=0; i<m; i++){
+            res=min(res,dp[0][i]);
+        }
+        return res;
+    }
+};
+
+
+// bottoms up(space optimization)
+class Solution {
+public:
+    int minFallingPathSum(vector<vector<int>>& grid) {
+        int m=grid.size();
+        vector<int> prev(m,-1);
+        for(int i=0; i<m; i++){
+            prev[i]=grid[m-1][i];
+        }
+        for(int row=m-2; row>=0; row--){
+            vector<int> temp(m,-1);
+            for(int col=0; col<m; col++){
+                int d1=prev[col]+grid[row][col];
+                int d2=1e8,d3=1e8;
+                if(col+1<m) d2=prev[col+1] + grid[row][col];
+                if(col-1>=0) d3=prev[col-1] + grid[row][col];
+                temp[col]=min(d1,min(d2,d3));
+            }
+            prev=temp;
+        }
+        int res=1e8;
+        for(int i=0; i<m; i++){
+            res=min(res,prev[i]);
+        }
+        return res;
+    }
+};
