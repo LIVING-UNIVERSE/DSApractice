@@ -1141,71 +1141,86 @@ class Solution {
 
 // bottoms up solution
 
-#include <bits/stdc++.h>
-using namespace std;
 
-// Function to find the maximum chocolates that can be collected
-int maximumChocolates(int n, int m, vector<vector<int>> &grid) {
-    // Create a 3D DP array to store computed results
-    vector<vector<vector<int>>> dp(n, vector<vector<int>>(m, vector<int>(m, 0)));
-
-    // Initialize the DP array for the last row
-    for (int j1 = 0; j1 < m; j1++) {
-        for (int j2 = 0; j2 < m; j2++) {
-            if (j1 == j2)
-                dp[n - 1][j1][j2] = grid[n - 1][j1];
-            else
-                dp[n - 1][j1][j2] = grid[n - 1][j1] + grid[n - 1][j2];
-        }
-    }
-
-    // Outer nested loops for traversing the DP array from the second-to-last row up to the first row
-    for (int i = n - 2; i >= 0; i--) {
-        for (int j1 = 0; j1 < m; j1++) {
-            for (int j2 = 0; j2 < m; j2++) {
-                int maxi = INT_MIN;
-
-                // Inner nested loops to try out 9 options (diagonal moves)
-                for (int di = -1; di <= 1; di++) {
-                    for (int dj = -1; dj <= 1; dj++) {
-                        int ans;
-
-                        if (j1 == j2)
-                            ans = grid[i][j1];
-                        else
-                            ans = grid[i][j1] + grid[i][j2];
-
-                        // Check if the move is valid (within the grid boundaries)
-                        if ((j1 + di < 0 || j1 + di >= m) || (j2 + dj < 0 || j2 + dj >= m))
-                            ans += -1e9; // A very large negative value to represent an invalid move
-                        else
-                            ans += dp[i + 1][j1 + di][j2 + dj]; // Include the DP result from the next row
-
-                        maxi = max(ans, maxi); // Update the maximum result
-                    }
-                }
-                dp[i][j1][j2] = maxi; // Store the maximum result for this state in the DP array
+public:
+int solve(int n, int m, vector<vector<int>>& grid) {
+    vector<vector<vector<int>>> dp(n, vector<vector<int>>(m, vector<int>(m, -1)));
+    for (int c1 = 0; c1 < m; c1++) {
+        for (int c2 = 0; c2 < m; c2++) {
+            if (c1 == c2) {
+                dp[n - 1][c1][c2] = INT_MIN; // Use INT_MIN instead of -1e8
+            } else {
+                dp[n - 1][c1][c2] = grid[n - 1][c1] + grid[n - 1][c2];
             }
         }
     }
-
-    // The maximum chocolates that can be collected is stored at the top-left corner of the DP array
+    for (int r = n - 2; r >= 0; r--) {
+        for (int c1 = 0; c1 < m; c1++) {
+            for (int c2 = 0; c2 < m; c2++) {
+                int res = -1e8;
+                
+                    for(int i=-1; i<=1; i++){
+                        for(int j=-1; j<=1; j++){
+                            int nc1=c1+i;
+                            int nc2=c2+j;
+                            int cash=-1e8;
+                            if(nc1>=0 &&nc1<m && nc2>=0 && nc2<m){
+                                if(c1!=c2){
+                                    cash=dp[r+1][nc1][nc2] +grid[r][c1]+grid[r][c2];
+                                }
+                            }
+                            res=max(res,cash);
+                        }
+                    }
+                
+                dp[r][c1][c2] = res;
+            }
+        }
+    }
     return dp[0][0][m - 1];
 }
 
-int main() {
-    // Define the grid as a 2D vector
-    vector<vector<int>> matrix{
-        {2, 3, 1, 2},
-        {3, 4, 2, 2},
-        {5, 6, 3, 5},
-    };
 
-    int n = matrix.size(); // Number of rows
-    int m = matrix[0].size(); // Number of columns
 
-    // Call the maximumChocolates function and print the result
-    cout << maximumChocolates(n, m, matrix);
 
-    return 0;
+// bottoms up(space optimization)
+
+public:
+int solve(int n, int m, vector<vector<int>>& grid) {
+    vector<vector<int>> prev(m,vector<int>(m,-1));
+    for (int c1 = 0; c1 < m; c1++) {
+        for (int c2 = 0; c2 < m; c2++) {
+            if (c1 == c2) {
+                prev[c1][c2] = -1e8; // Use INT_MIN instead of -1e8
+            } else {
+                prev[c1][c2] = grid[n - 1][c1] + grid[n - 1][c2];
+            }
+        }
+    }
+    for (int r = n - 2; r >= 0; r--) {
+        vector<vector<int>> curr(m,vector<int>(m,-1));
+        for (int c1 = 0; c1 < m; c1++) {
+            for (int c2 = 0; c2 < m; c2++) {
+                int res = INT_MIN; // Initialize with INT_MIN
+                
+                    for(int i=-1; i<=1; i++){
+                        for(int j=-1; j<=1; j++){
+                            int nc1=c1+i;
+                            int nc2=c2+j;
+                            int cash=-1e8;
+                            if(nc1>=0 &&nc1<m && nc2>=0 && nc2<m){
+                                if(c1!=c2){
+                                    cash=prev[nc1][nc2] +grid[r][c1]+grid[r][c2];
+                                }
+                            }
+                            res=max(res,cash);
+                        }
+                    }
+                
+                curr[c1][c2] = res;
+            }
+        }
+        prev=curr;
+    }
+    return prev[0][m - 1];
 }
