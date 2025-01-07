@@ -94,3 +94,137 @@ class Solution {
         return prev[target];
     }
 };
+
+
+
+
+
+
+//416. Partition Equal Subset Sum
+Attempted
+Medium
+Topics
+Companies
+Facebook
+Microsoft
+Amazon
+Apple
+Google
+Given an integer array nums, return true if you can partition the array into two subsets such that the sum of the elements in both subsets is equal or false otherwise.
+
+ 
+
+Example 1:
+
+Input: nums = [1,5,11,5]
+Output: true
+Explanation: The array can be partitioned as [1, 5, 5] and [11].
+Example 2:
+
+Input: nums = [1,2,3,5]
+Output: false
+Explanation: The array cannot be partitioned into equal sum subsets.
+ 
+
+Constraints:
+
+1 <= nums.length <= 200
+1 <= nums[i] <= 100
+
+
+
+// top down approach
+class Solution {
+private:
+    bool f(int ind,int target, vector<vector<int>> &dp, vector<int> &arr){
+        if(target==0) return true;
+        if(ind==0) return (arr[0]==target);
+        if(dp[ind][target]!=-1) return dp[ind][target];
+        bool notTaken = f(ind-1,target,dp,arr);
+        bool taken = false;
+        if(target>arr[ind]){
+            taken =f(ind-1,target-arr[ind],dp,arr);
+        }
+        return dp[ind][target]=taken || notTaken;
+    }
+public:
+    bool canPartition(vector<int>& arr) {
+        int n=arr.size();
+        int sum=0;
+        for(int x:arr){
+            sum+=x;
+        }
+        if(sum%2!=0) return false;
+        int target=sum/2;
+        vector<vector<int>> dp(n,vector<int>(target+1,-1));
+        return f(n-1,target,dp,arr);
+    }
+};
+
+
+
+// bottoms up approach
+class Solution {
+public:
+    bool canPartition(vector<int>& arr) {
+        int n=arr.size();
+        int sum=0;
+        for(int x:arr){
+            sum+=x;
+        }
+        if(sum%2!=0) return false;
+        int target=sum/2;
+        vector<vector<bool>> dp(n,vector<bool>(target+1,false));
+        for(int i=0; i<n; i++){
+            dp[i][0]=true;
+        }
+        if(arr[0]<=target){
+            dp[0][arr[0]]=true;
+        }
+        for(int i=1; i<n; i++){
+            for(int j=1; j<=target; j++){
+                bool notTaken= dp[i-1][j];
+                bool taken=false;
+                if(j>=arr[i]){
+                    taken=dp[i-1][j-arr[i]];
+                }
+                dp[i][j]=taken||notTaken;
+            }
+        }
+        return dp[n-1][target];
+    }
+};
+
+
+// bottoms up approach(space optimized)
+class Solution {
+public:
+    bool canPartition(vector<int>& arr) {
+        int n=arr.size();
+        int sum=0;
+        for(int x:arr){
+            sum+=x;
+        }
+        if(sum%2!=0) return false;
+        int target=sum/2;
+        vector<bool> prev(target+1,false);
+        prev[0]=true;
+        if(target>=arr[0]){
+            prev[arr[0]]=true;
+        }
+        for(int i=1; i<n; i++){
+            vector<bool> curr(target+1,false);
+            curr[0]=true;
+            for(int j=1; j<=target; j++){
+                bool notTaken= prev[j];
+                bool taken=false;
+                if(j>=arr[i]){
+                    taken=prev[j-arr[i]];
+                }
+                curr[j]=taken||notTaken;
+            }
+            prev=curr;
+        }
+        return prev[target];
+    }
+};
