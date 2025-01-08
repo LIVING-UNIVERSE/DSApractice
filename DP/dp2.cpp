@@ -302,3 +302,133 @@ public:
         return max(f(n-2,t1),f(n-2,t2));
     }
 };
+
+
+
+
+//322. Coin Change
+Solved
+Medium
+Topics
+Companies
+Amazon
+Microsoft
+Google
+Mathworks
+Bloomberg
+You are given an integer array coins representing coins of different denominations and an integer amount representing a total amount of money.
+
+Return the fewest number of coins that you need to make up that amount. If that amount of money cannot be made up by any combination of the coins, return -1.
+
+You may assume that you have an infinite number of each kind of coin.
+
+ 
+
+Example 1:
+
+Input: coins = [1,2,5], amount = 11
+Output: 3
+Explanation: 11 = 5 + 5 + 1
+Example 2:
+
+Input: coins = [2], amount = 3
+Output: -1
+Example 3:
+
+Input: coins = [1], amount = 0
+Output: 0
+ 
+
+Constraints:
+
+1 <= coins.length <= 12
+1 <= coins[i] <= 231 - 1
+0 <= amount <= 104
+
+
+
+// top down approach
+class Solution {
+private:
+    int f(int ind, int amt, vector<int> &arr,vector<vector<int>> &dp){
+        if(amt==0) return 0;
+        if(ind ==0){
+            if(amt%arr[0]==0) return amt/arr[0];
+            return 1e8;
+        }
+        if(dp[ind][amt]!=-1) return dp[ind][amt];
+        int nt=f(ind-1,amt,arr,dp);
+        int t=1e8;
+        if(amt>=arr[ind]){
+            t=1+f(ind,amt-arr[ind],arr,dp);
+        }
+        return dp[ind][amt]=min(t,nt);
+    }
+public:
+    int coinChange(vector<int>& arr, int amt) {
+        int n=arr.size();
+        vector<vector<int>> dp(n,vector<int>(amt+1,-1));
+        int ans=f(n-1,amt,arr,dp);
+        return (ans==1e8)?-1:ans;
+    }
+};
+
+
+
+// bottoms up aproach
+class Solution {
+public:
+    int coinChange(vector<int>& arr, int amt) {
+        int n=arr.size();
+        vector<vector<int>> dp(n,vector<int>(amt+1,1e8));
+        for(int i=0; i<n; i++){
+            dp[i][0]=0;
+        }
+        for(int i=1; i<=amt; i++){
+            if(i%arr[0]==0) dp[0][i]=i/arr[0];
+        }
+        for(int i=1; i<n ; i++){
+            for(int a=1; a<=amt; a++){
+                int nt=dp[i-1][a];
+                int t=1e8;
+                if(a>=arr[i]){
+                    t=1+dp[i][a-arr[i]];
+                }
+                dp[i][a]=min(t,nt);
+            }
+        }
+        int ans=dp[n-1][amt];
+        return (ans==1e8)?-1:ans;
+    }
+};
+
+
+
+
+// bottoms up(space optimization)
+class Solution {
+public:
+    int coinChange(vector<int>& arr, int amt) {
+        int n=arr.size();
+        vector<int> prev(amt+1,1e8);
+        prev[0]=0;
+        for(int i=1; i<=amt; i++){
+            if(i%arr[0]==0) prev[i]=i/arr[0];
+        }
+        for(int i=1; i<n ; i++){
+            vector<int> curr(amt+1,1e8);
+            curr[0]=0;
+            for(int a=1; a<=amt; a++){
+                int nt=prev[a];
+                int t=1e8;
+                if(a>=arr[i]){
+                    t=1+curr[a-arr[i]];
+                }
+                curr[a]=min(t,nt);
+            }
+            prev=curr;
+        }
+        int ans=prev[amt];
+        return (ans==1e8)?-1:ans;
+    }
+};
