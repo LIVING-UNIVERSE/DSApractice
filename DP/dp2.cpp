@@ -907,3 +907,128 @@ public:
         return prev[target];
     }
 };
+
+
+
+
+
+// //0 - 1 Knapsack Problem
+// Difficulty: MediumAccuracy: 31.76%Submissions: 454K+Points: 4
+// You are given the weights and values of items, and you need to put these items in a knapsack of capacity capacity to achieve the maximum total value in the knapsack. Each item is available in only one quantity.
+
+// In other words, you are given two integer arrays val[] and wt[], which represent the values and weights associated with items, respectively. You are also given an integer capacity, which represents the knapsack capacity. Your task is to find the maximum sum of values of a subset of val[] such that the sum of the weights of the corresponding subset is less than or equal to capacity. You cannot break an item; you must either pick the entire item or leave it (0-1 property).
+
+// Examples :
+
+// Input: capacity = 4, val[] = [1, 2, 3], wt[] = [4, 5, 1] 
+// Output: 3
+// Explanation: Choose the last item, which weighs 1 unit and has a value of 3.
+// Input: capacity = 3, val[] = [1, 2, 3], wt[] = [4, 5, 6] 
+// Output: 0
+// Explanation: Every item has a weight exceeding the knapsack's capacity (3).
+// Input: capacity = 5, val[] = [10, 40, 30, 50], wt[] = [5, 4, 6, 3] 
+// Output: 50
+// Explanation: Choose the second item (value 40, weight 4) and the fourth item (value 50, weight 3) for a total weight of 7, which exceeds the capacity. Instead, pick the last item (value 50, weight 3) for a total value of 50.
+// Expected Time Complexity: O(n*capacity).
+// Expected Auxiliary Space: O(n*capacity)
+
+// Constraints:
+// 2 ≤ val.size() = wt.size() ≤ 103
+// 1 ≤ capacity ≤ 103
+// 1 ≤ val[i] ≤ 103
+// 1 ≤ wt[i] ≤ 103
+
+
+// top down approach
+class Solution {
+  private:
+    int f(int ind, int cap, vector<int> &wt,vector<int> &val, vector<vector<int>> &dp){
+        if(cap==0) return 0;
+        if(ind==0){
+            if(wt[0]<=cap){
+                return val[0];
+            }
+            else{
+                return 0;
+            }
+        }
+        if(dp[ind][cap]!=-1) return dp[ind][cap];
+        int notTaken=f(ind-1,cap,wt,val,dp);
+        int taken=-1e8;
+        if(cap>=wt[ind]){
+            taken=f(ind-1,cap-wt[ind],wt,val,dp)+val[ind];
+        }
+        return dp[ind][cap]=max(taken,notTaken);
+    }
+  public:
+    // Function to return max value that can be put in knapsack of capacity.
+    int knapSack(int cap, vector<int> &val, vector<int> &wt) {
+        int n=val.size();
+        vector<vector<int>> dp(n,vector<int>(cap+1,-1));
+        return f(n-1,cap,wt,val,dp);
+    }
+};
+
+
+
+// bottoms up approach
+class Solution {
+  private:
+    int f(int ind, int cap, vector<int> &wt,vector<int> &val, vector<vector<int>> &dp){
+        if(cap==0) return 0;
+        if(ind==0){
+            if(wt[0]<=cap){
+                return val[0];
+            }
+            else{
+                return 0;
+            }
+        }
+        if(dp[ind][cap]!=-1) return dp[ind][cap];
+        int notTaken=f(ind-1,cap,wt,val,dp);
+        int taken=-1e8;
+        if(cap>=wt[ind]){
+            taken=f(ind-1,cap-wt[ind],wt,val,dp)+val[ind];
+        }
+        return dp[ind][cap]=max(taken,notTaken);
+    }
+  public:
+    // Function to return max value that can be put in knapsack of capacity.
+    int knapSack(int cap, vector<int> &val, vector<int> &wt) {
+        int n=val.size();
+        vector<vector<int>> dp(n,vector<int>(cap+1,-1));
+        return f(n-1,cap,wt,val,dp);
+    }
+};
+
+
+
+// bottoms up approach(one row space optimized)
+class Solution {
+  private:
+    int f(int ind, int cap, vector<int> &wt,vector<int> &val, vector<vector<int>> &dp){
+        if(cap==0) return 0;
+        if(ind==0){
+            if(wt[0]<=cap){
+                return val[0];
+            }
+            else{
+                return 0;
+            }
+        }
+        if(dp[ind][cap]!=-1) return dp[ind][cap];
+        int notTaken=f(ind-1,cap,wt,val,dp);
+        int taken=-1e8;
+        if(cap>=wt[ind]){
+            taken=f(ind-1,cap-wt[ind],wt,val,dp)+val[ind];
+        }
+        return dp[ind][cap]=max(taken,notTaken);
+    }
+  public:
+    // Function to return max value that can be put in knapsack of capacity.
+    int knapSack(int cap, vector<int> &val, vector<int> &wt) {
+        int n=val.size();
+        vector<vector<int>> dp(n,vector<int>(cap+1,-1));
+        return f(n-1,cap,wt,val,dp);
+    }
+};
