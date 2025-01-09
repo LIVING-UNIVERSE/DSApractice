@@ -779,3 +779,131 @@ public:
         return prev[target];
     }
 };
+
+
+
+//518. Coin Change II
+Attempted
+Medium
+Topics
+Companies
+You are given an integer array coins representing coins of different denominations and an integer amount representing a total amount of money.
+
+Return the number of combinations that make up that amount. If that amount of money cannot be made up by any combination of the coins, return 0.
+
+You may assume that you have an infinite number of each kind of coin.
+
+The answer is guaranteed to fit into a signed 32-bit integer.
+
+ 
+
+Example 1:
+
+Input: amount = 5, coins = [1,2,5]
+Output: 4
+Explanation: there are four ways to make up the amount:
+5=5
+5=2+2+1
+5=2+1+1+1
+5=1+1+1+1+1
+Example 2:
+
+Input: amount = 3, coins = [2]
+Output: 0
+Explanation: the amount of 3 cannot be made up just with coins of 2.
+Example 3:
+
+Input: amount = 10, coins = [10]
+Output: 1
+ 
+
+Constraints:
+
+1 <= coins.length <= 300
+1 <= coins[i] <= 5000
+All the values of coins are unique.
+0 <= amount <= 5000
+
+// top down approach
+class Solution {
+private:
+    int f(int ind, int target, vector<int> &arr,vector<vector<int>> &dp){
+        if(target==0) return 1;
+        if(ind==0){
+            if(target%arr[0]==0) return 1;
+            return 0;
+        }
+        int notTaken=f(ind-1,target,arr,dp);
+        int taken=0;
+        if(target>=arr[ind]){
+            taken=f(ind,target-arr[ind],arr,dp);
+        }
+        return notTaken+taken;
+    }
+public:
+    int change(int target, vector<int>& arr) {
+        int n=arr.size();
+        vector<vector<int>> dp(n,vector<int>(target+1,-1));
+        return f(n-1,target,arr,dp);
+    }
+};
+
+
+// bottoms up approach
+class Solution {
+public:
+    int change(int target, vector<int>& arr) {
+        int n=arr.size();
+        vector<vector<int>> dp(n,vector<int>(target+1,0));
+        for(int i=0; i<n; i++){
+            dp[i][0]=1;
+        }
+        for(int i=1; i<=target; i++){
+            if(i%arr[0]==0) {
+                dp[0][i]=1;
+            }
+        }
+        for(int i=1; i<n; i++){
+            for(int j=1; j<=target;j++){
+                long notTaken=dp[i-1][j];
+                long taken=0;
+                if(j>=arr[i]){
+                    taken=dp[i][j-arr[i]];
+                }
+                dp[i][j]= int(notTaken+taken);
+            }
+        }
+        return dp[n-1][target];
+    }
+};
+
+
+
+// bottoms up approach(space optimization)
+class Solution {
+public:
+    int change(int target, vector<int>& arr) {
+        int n=arr.size();
+        vector<int> prev(target+1,0);
+        prev[0]=0;
+        for(int i=1; i<=target; i++){
+            if(i%arr[0]==0) {
+                prev[i]=1;
+            }
+        }
+        for(int i=1; i<n; i++){
+            vector<int> curr(target+1,0);
+            curr[0]=1;
+            for(int j=1; j<=target;j++){
+                long notTaken=prev[j];
+                long taken=0;
+                if(j>=arr[i]){
+                    taken=prev[j-arr[i]];
+                }
+                curr[j]= int(notTaken+taken);
+            }
+            prev=curr;
+        }
+        return prev[target];
+    }
+};
