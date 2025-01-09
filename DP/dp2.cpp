@@ -432,3 +432,120 @@ public:
         return (ans==1e8)?-1:ans;
     }
 };
+
+
+
+
+
+//Perfect Sum Problem
+Difficulty: MediumAccuracy: 20.58%Submissions: 450K+Points: 4
+Given an array arr of non-negative integers and an integer target, the task is to count all subsets of the array whose sum is equal to the given target.
+
+Examples:
+
+Input: arr[] = [5, 2, 3, 10, 6, 8], target = 10
+Output: 3
+Explanation: The subsets {5, 2, 3}, {2, 8}, and {10} sum up to the target 10.
+Input: arr[] = [2, 5, 1, 4, 3], target = 10
+Output: 3
+Explanation: The subsets {2, 1, 4, 3}, {5, 1, 4}, and {2, 5, 3} sum up to the target 10.
+Input: arr[] = [5, 7, 8], target = 3
+Output: 0
+Explanation: There are no subsets of the array that sum up to the target 3.
+Input: arr[] = [35, 2, 8, 22], target = 0
+Output: 1
+Explanation: The empty subset is the only subset with a sum of 0.
+Constraints:
+1 ≤ arr.size() ≤ 103
+0 ≤ arr[i] ≤ 103
+0 ≤ target ≤ 103
+
+
+// top down approach
+class Solution {
+  private:
+    int f(int ind, int target, vector<int> &arr,vector<vector<int>> &dp){
+        if(ind==0){
+            if(target==0 && arr[0]==0) return 2;
+            if(target==0) return 1;
+            if(arr[0]==target) return 1;
+            return 0;
+        }
+        int nt=f(ind-1,target,arr,dp);
+        int t=0;
+        if(target>=arr[ind]){
+            t=f(ind-1,target-arr[ind],arr,dp);
+        }
+        return dp[ind][target]=t+nt;
+    }
+  public:
+    int perfectSum(vector<int>& arr, int target) {
+        int n=arr.size();
+        vector<vector<int>> dp(n,vector<int>(target+1,-1));
+        return f(n-1,target,arr,dp);
+    }
+};
+
+
+
+// bottoms up approach
+class Solution {
+  public:
+    int perfectSum(vector<int>& arr, int target) {
+        int n=arr.size();
+        vector<vector<int>> dp(n,vector<int>(target+1,0));
+        if(arr[0]<=target){
+            dp[0][arr[0]]=1;
+        }
+        if(arr[0]==0){
+            dp[0][0]=2;
+        }
+        else{
+            dp[0][0]=1;
+        }
+        for(int i=1; i<n; i++){
+            for(int t=0; t<=target; t++){
+                int notTaken=dp[i-1][t];
+                int taken=0;
+                if(t>=arr[i]){
+                    taken=dp[i-1][t-arr[i]];
+                }
+                dp[i][t]=notTaken+taken;
+            }
+        }
+        return dp[n-1][target];
+    }
+};
+
+
+// bottoms up approach(space optimized)
+class Solution {
+  public:
+    int perfectSum(vector<int>& arr, int target) {
+        int n=arr.size();
+        // vector<vector<int>> dp(n,vector<int>(target+1,0));
+        vector<int> prev(target+1,0);
+        if(arr[0]<=target){
+            prev[arr[0]]=1;
+        }
+        if(arr[0]==0){
+            prev[0]=2;
+        }
+        else{
+            prev[0]=1;
+        }
+        for(int i=1; i<n; i++){
+            vector<int> curr(target+1,0);
+            for(int t=0; t<=target; t++){
+                int notTaken=prev[t];
+                int taken=0;
+                if(t>=arr[i]){
+                    taken=prev[t-arr[i]];
+                }
+                curr[t]=notTaken+taken;
+            }
+            prev=curr;
+        }
+        return prev[target];
+    }
+};
