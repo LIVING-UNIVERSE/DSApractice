@@ -1116,7 +1116,6 @@ class Solution {
 
 
 // bottoms up approach(space optimization)
-// User function Template for C++
 
 class Solution {
   public:
@@ -1138,6 +1137,32 @@ class Solution {
                 curr[j]=max(taken,notTaken);
             }
             prev=curr;
+        }
+        return prev[cap];
+    }
+};
+
+
+// bottoms up approach( 1D array space optimization)
+class Solution {
+  public:
+    int knapSack(vector<int>& val, vector<int>& wt, int cap) {
+        int n=wt.size();
+        vector<int> prev(cap+1,0);
+        for(int i=0; i<=cap; i++){
+            if(i>=wt[0]){
+                prev[i]= (i/wt[0])*val[0];
+            }
+        }
+        for(int i=1; i<n; i++){
+            for(int j=0;j<=cap; j++){
+                int notTaken=prev[j];
+                int taken=-1e8;
+                if(j>=wt[i]){
+                    taken=prev[j-wt[i]]+val[i];
+                }
+                prev[j]=max(taken,notTaken);
+            }
         }
         return prev[cap];
     }
