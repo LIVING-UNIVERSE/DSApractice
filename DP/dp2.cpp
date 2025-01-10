@@ -1032,3 +1032,113 @@ class Solution {
         return f(n-1,cap,wt,val,dp);
     }
 };
+
+
+
+
+// //Knapsack with Duplicate Items
+// Difficulty: MediumAccuracy: 52.13%Submissions: 170K+Points: 4
+// Given a set of items, each with a weight and a value, represented by the array wt and val respectively. Also, a knapsack with a weight limit capacity.
+// The task is to fill the knapsack in such a way that we can get the maximum profit. Return the maximum profit.
+// Note: Each item can be taken any number of times.
+
+// Examples:
+
+// Input: val = [1, 1], wt = [2, 1], capacity = 3
+// Output: 3
+// Explanation: The optimal choice is to pick the 2nd element 3 times.
+// Input: val[] = [6, 1, 7, 7], wt[] = [1, 3, 4, 5], capacity = 8
+// Output: 48
+// Explanation: The optimal choice is to pick the 1st element 8 times.
+// Input: val[] = [6, 8, 7, 100], wt[] = [2, 3, 4, 5], capacity = 1
+// Output: 0
+// Explanation: We can't pick any element .hence, total profit is 0.
+// Constraints:
+// 1 <= val.size() = wt.size() <= 1000
+// 1 <= capacity <= 1000
+// 1 <= val[i], wt[i] <= 100
+
+
+// top down approach
+// User function Template for C++
+
+class Solution {
+  private:
+    int f(int ind, int cap, vector<int> &wt,vector<int> &val, vector<vector<int>> &dp){
+        if(cap==0) return 0;
+        if(ind==0 && cap<wt[0]) return 0;
+        if(ind==0 && cap>=wt[0]) return (cap/wt[0])*val[0];
+        if(dp[ind][cap]!=-1) return dp[ind][cap];
+        int notTaken=f(ind-1,cap,wt,val,dp);
+        int taken=-1e8;
+        if(cap>=wt[ind]){
+            taken= val[ind]+f(ind,cap-wt[ind],wt,val,dp);
+        }
+        return dp[ind][cap]=max(taken,notTaken);
+    }
+  public:
+    int knapSack(vector<int>& val, vector<int>& wt, int cap) {
+        int n=wt.size();
+        vector<vector<int>> dp(n,vector<int>(cap+1,-1));
+        return f(n-1,cap,wt,val,dp);
+    }
+};
+
+
+
+// bottoms up approach
+// User function Template for C++
+
+class Solution {
+  public:
+    int knapSack(vector<int>& val, vector<int>& wt, int cap) {
+        int n=wt.size();
+        vector<vector<int>> dp(n,vector<int>(cap+1,0));
+        for(int i=0; i<=cap; i++){
+            if(i>=wt[0]){
+                dp[0][i]= (i/wt[0])*val[0];
+            }
+        }
+        for(int i=1; i<n; i++){
+            for(int j=0;j<=cap; j++){
+                int notTaken=dp[i-1][j];
+                int taken=-1e8;
+                if(j>=wt[i]){
+                    taken=dp[i][j-wt[i]]+val[i];
+                }
+                dp[i][j]=max(taken,notTaken);
+            }
+        }
+        return dp[n-1][cap];
+    }
+};
+
+
+
+// bottoms up approach(space optimization)
+// User function Template for C++
+
+class Solution {
+  public:
+    int knapSack(vector<int>& val, vector<int>& wt, int cap) {
+        int n=wt.size();
+        vector<int> prev(cap+1,0),curr(cap+1,0);
+        for(int i=0; i<=cap; i++){
+            if(i>=wt[0]){
+                prev[i]= (i/wt[0])*val[0];
+            }
+        }
+        for(int i=1; i<n; i++){
+            for(int j=0;j<=cap; j++){
+                int notTaken=prev[j];
+                int taken=-1e8;
+                if(j>=wt[i]){
+                    taken=curr[j-wt[i]]+val[i];
+                }
+                curr[j]=max(taken,notTaken);
+            }
+            prev=curr;
+        }
+        return prev[cap];
+    }
+};
