@@ -515,3 +515,85 @@ public:
         return n1+n2-2*prev[n2];
     }
 };
+
+
+
+
+//1092. Shortest Common Supersequence 
+Solved
+Hard
+Topics
+Companies
+Hint
+Given two strings str1 and str2, return the shortest string that has both str1 and str2 as subsequences. If there are multiple valid strings, return any of them.
+
+A string s is a subsequence of string t if deleting some number of characters from t (possibly 0) results in the string s.
+
+ 
+
+Example 1:
+
+Input: str1 = "abac", str2 = "cab"
+Output: "cabac"
+Explanation: 
+str1 = "abac" is a subsequence of "cabac" because we can delete the first "c".
+str2 = "cab" is a subsequence of "cabac" because we can delete the last "ac".
+The answer provided is the shortest such string that satisfies these properties.
+Example 2:
+
+Input: str1 = "aaaaaaaa", str2 = "aaaaaaaa"
+Output: "aaaaaaaa"
+ 
+
+Constraints:
+
+1 <= str1.length, str2.length <= 1000
+str1 and str2 consist of lowercase English letters.
+
+
+
+// my solution using the dp table of tabular approach method . in dp we start from last cell if both chars of string equal then push any of them
+// into the vector . it the both chars are not equal then move to the neighbour index having same value and push the other index into the vector .
+
+// my solution
+class Solution {
+public:
+    string shortestCommonSupersequence(string s1, string s2) {
+        int n1=s1.size(),n2=s2.size();
+        vector<vector<int>> dp(n1+1,vector<int>(n2+1,0));
+        for(int i=1; i<=n1; i++){
+            for(int j=1;j<=n2;j++){
+                if(s1[i-1]==s2[j-1]) dp[i][j]=1+dp[i-1][j-1];
+                else dp[i][j]=max(dp[i-1][j],dp[i][j-1]);
+            }
+        }
+        vector<char> v;
+        int i=n1,j=n2;
+        while(i>0 && j>0){
+            if(s1[i-1]==s2[j-1]){
+                v.push_back(s1[i-1]);
+                i--;j--;
+            }
+            else{
+                if(dp[i-1][j]==dp[i][j]){
+                    v.push_back(s1[i-1]);i--;
+                }
+                else{
+                    v.push_back(s2[j-1]);j--;
+                }
+            }
+        }
+        while(i){
+            v.push_back(s1[i-1]);i--;
+        }
+        while(j){
+            v.push_back(s2[j-1]);j--;
+        }
+        string s="";
+        reverse(v.begin(),v.end());
+        for(auto x:v){
+            s+=x;
+        }
+        return s;
+    }
+};
