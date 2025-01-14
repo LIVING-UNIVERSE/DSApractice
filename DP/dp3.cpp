@@ -597,3 +597,120 @@ public:
         return s;
     }
 };
+
+
+
+//72. Edit Distance
+Attempted
+Medium
+Topics
+Companies
+Amazon
+LinkedIn
+Microsoft
+Google
+Apple
+Given two strings word1 and word2, return the minimum number of operations required to convert word1 to word2.
+
+You have the following three operations permitted on a word:
+
+Insert a character
+Delete a character
+Replace a character
+ 
+
+Example 1:
+
+Input: word1 = "horse", word2 = "ros"
+Output: 3
+Explanation: 
+horse -> rorse (replace 'h' with 'r')
+rorse -> rose (remove 'r')
+rose -> ros (remove 'e')
+Example 2:
+
+Input: word1 = "intention", word2 = "execution"
+Output: 5
+Explanation: 
+intention -> inention (remove 't')
+inention -> enention (replace 'i' with 'e')
+enention -> exention (replace 'n' with 'x')
+exention -> exection (replace 'n' with 'c')
+exection -> execution (insert 'u')
+ 
+
+Constraints:
+
+0 <= word1.length, word2.length <= 500
+word1 and word2 consist of lowercase English letters.
+
+
+
+// top down approach
+class Solution {
+private:
+    int f(int ind1,int ind2,string &s1,string &s2,vector<vector<int>> &dp){
+        if(ind1<0) return ind2+1;
+        if(ind2<0) return ind1+1;
+        if(dp[ind1][ind2]!=-1) return dp[ind1][ind2];
+        if(s1[ind1]==s2[ind2]) return f(ind1-1,ind2-1,s1,s2,dp);
+        return 1+min(f(ind1-1,ind2-1,s1,s2,dp),min(f(ind1-1,ind2,s1,s2,dp),f(ind1,ind2-1,s1,s2,dp)));
+    }
+public:
+    int minDistance(string s1, string s2) {
+        int n1=s1.size(),n2=s2.size();
+        vector<vector<int>> dp(n1+1,vector<int>(n2+1,-1));
+        return f(n1-1,n2-1,s1,s2,dp);
+    }
+};
+
+
+
+// bottoms up approach
+class Solution {
+public:
+    int minDistance(string s1, string s2) {
+        int n1=s1.size(),n2=s2.size();
+        vector<vector<int>> dp(n1+1,vector<int>(n2+1,0));
+        for(int i=0; i<=n2; i++){
+            dp[0][i]=i;
+        }
+        for(int i=0; i<=n1; i++){
+            dp[i][0]=i;
+        }
+        for(int i=1; i<=n1;i++){
+            for(int j=1;j<=n2;j++){
+                if(s1[i-1]==s2[j-1]) dp[i][j]=dp[i-1][j-1];
+                else{
+                    dp[i][j]=1+min(dp[i-1][j-1],min(dp[i-1][j],dp[i][j-1]));
+                }
+            }
+        }
+        return dp[n1][n2];
+    }
+};
+
+
+// bottoms up space optimized
+class Solution {
+public:
+    int minDistance(string s1, string s2) {
+        int n1=s1.size(),n2=s2.size();
+        // vector<vector<int>> dp(n1+1,vector<int>(n2+1,0));
+        vector<int> prev(n2+1,0),curr(n2+1,0);
+        for(int i=0; i<=n2; i++){
+            prev[i]=i;
+        }
+        for(int i=1; i<=n1;i++){
+            curr[0]=i;
+            for(int j=1;j<=n2;j++){
+                if(s1[i-1]==s2[j-1]) curr[j]=prev[j-1];
+                else{
+                    curr[j]=1+min(prev[j-1],min(prev[j],curr[j-1]));
+                }
+            }
+            prev=curr;
+        }
+        return prev[n2];
+    }
+};
