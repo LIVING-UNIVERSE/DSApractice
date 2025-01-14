@@ -239,3 +239,133 @@ class Solution {
         return res;
     }
 };
+
+
+
+
+
+//516. Longest Palindromic Subsequence
+Solved
+Medium
+Topics
+Companies
+Given a string s, find the longest palindromic subsequence's length in s.
+
+A subsequence is a sequence that can be derived from another sequence by deleting some or no elements without changing the order of the remaining elements.
+
+ 
+
+Example 1:
+
+Input: s = "bbbab"
+Output: 4
+Explanation: One possible longest palindromic subsequence is "bbbb".
+Example 2:
+
+Input: s = "cbbd"
+Output: 2
+Explanation: One possible longest palindromic subsequence is "bb".
+ 
+
+Constraints:
+
+1 <= s.length <= 1000
+s consists only of lowercase English letters.
+
+
+
+//method-1
+(using brain -> using lcs(longest common subsequence) on the same string and its reversed string.)
+// bottoms up approach
+class Solution {
+public:
+    int longestPalindromeSubseq(string s) {
+        int n=s.size();
+        string t=s;
+        reverse(t.begin(),t.end());
+        vector<vector<int>> dp(n+1,vector<int>(n+1,0));
+        for(int i=1; i<=n; i++){
+            for(int j=1; j<=n; j++){
+                if(s[i-1]==t[j-1]){
+                    dp[i][j]=1+dp[i-1][j-1];
+                }
+                else{
+                    dp[i][j]=max(dp[i-1][j],dp[i][j-1]);
+                }
+            }
+        }
+        return dp[n][n];
+    }
+};
+
+
+// bottoms up(space optimized)
+class Solution {
+public:
+    int longestPalindromeSubseq(string s) {
+        int n=s.size();
+        string t=s;
+        reverse(t.begin(),t.end());
+        vector<int> prev(n+1,0),curr(n+1,0);
+        for(int i=1; i<=n; i++){
+            for(int j=1; j<=n; j++){
+                if(s[i-1]==t[j-1]){
+                    curr[j]=1+prev[j-1];
+                }
+                else{
+                    curr[j]=max(prev[j],curr[j-1]);
+                }
+            }
+            prev=curr;
+        }
+        return prev[n];
+    }
+};
+
+
+
+// method -2
+
+// bottoms up approach
+class Solution {
+public:
+    int longestPalindromeSubseq(string s) {
+        int n=s.size();
+        vector<vector<int>> dp(n,vector<int>(n,0));
+        for(int i=0; i<n; i++){
+            dp[i][i]=1;
+        }
+        for(int i=n-1; i>=0; i--){
+            for(int j=i+1;j<n; j++){
+                if(s[i]==s[j]) dp[i][j]=2+dp[i+1][j-1];
+                else{
+                    dp[i][j]=max(dp[i+1][j],dp[i][j-1]);
+                }
+            }
+        }
+        return dp[0][n-1];
+    }
+};
+
+// bottoms up (space optimized)
+class Solution {
+public:
+    int longestPalindromeSubseq(string s) {
+        int n=s.size();
+        // vector<vector<int>> dp(n,vector<int>(n,0));
+        vector<int> prev(n,0);
+        prev[0]=1;
+        for(int i=n-1; i>=0; i--){
+            vector<int> curr(n,0);
+            curr[i]=1;
+            for(int j=i+1;j<n; j++){
+                if(s[i]==s[j]) curr[j]=2+prev[j-1];
+                else{
+                    curr[j]=max(prev[j],curr[j-1]);
+                }
+            }
+            prev=curr;
+        }
+        return prev[n-1];
+    }
+};
