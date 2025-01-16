@@ -826,3 +826,128 @@ public:
         return int(prev[n2]);
     }
 };
+
+
+
+//44. Wildcard Matching
+Attempted
+Hard
+Topics
+Companies
+Microsoft
+Amazon
+Google
+Facebook
+Uber
+Given an input string (s) and a pattern (p), implement wildcard pattern matching with support for '?' and '*' where:
+
+'?' Matches any single character.
+'*' Matches any sequence of characters (including the empty sequence).
+The matching should cover the entire input string (not partial).
+
+ 
+
+Example 1:
+
+Input: s = "aa", p = "a"
+Output: false
+Explanation: "a" does not match the entire string "aa".
+Example 2:
+
+Input: s = "aa", p = "*"
+Output: true
+Explanation: '*' matches any sequence.
+Example 3:
+
+Input: s = "cb", p = "?a"
+Output: false
+Explanation: '?' matches 'c', but the second letter is 'a', which does not match 'b'.
+ 
+
+Constraints:
+
+0 <= s.length, p.length <= 2000
+s contains only lowercase English letters.
+p contains only lowercase English letters, '?' or '*'.
+
+
+// top down approach(giving TLE on leetcode)
+class Solution {
+private:
+    bool f(int ind1,int ind2,string &s,string &p,vector<vector<bool>> &dp){
+        if(ind2<0){
+            if(ind1<0) return true;
+            return false;
+        }
+        if(ind1<0){
+            for(int i=ind2; i>=0; i--){
+                if(p[i]!='*') return false;
+            }
+            return true;
+        }
+        if(dp[ind1][ind2]!=false) return dp[ind1][ind2];
+        if(p[ind2]=='?'||p[ind2]==s[ind1]) return dp[ind1][ind2]= f(ind1-1,ind2-1,s,p,dp);
+        if(p[ind2]=='*') return dp[ind1][ind2]= f(ind1,ind2-1,s,p,dp)|| f(ind1-1,ind2,s,p,dp);
+        return dp[ind1][ind2]= false;
+    }
+public:
+    bool isMatch(string s, string p) {
+        int n1=s.size(),n2=p.size();
+        vector<vector<bool>> dp(n1+1,vector<bool>(n2+1,false));
+        return f(n1-1,n2-1,s,p,dp);
+    }
+};
+
+
+
+
+// bottoms up approach
+class Solution {
+public:
+    bool isMatch(string s, string p) {
+        int n1=s.size(),n2=p.size();
+        vector<vector<bool>> dp(n1+1,vector<bool>(n2+1,false));
+        dp[0][0]=true;
+        for(int i=1; i<=n2; i++){
+            bool flag=true;
+            for(int j=1; j<=i;j++){
+                if(p[j-1]!='*') flag=false;
+            }
+            if(flag) dp[0][i]=true;
+        }
+        for(int i=1; i<=n1; i++){
+            for(int j=1;j<=n2; j++){
+                if(p[j-1]=='?' || p[j-1]==s[i-1]) dp[i][j]=dp[i-1][j-1];
+                else if (p[j-1]=='*') dp[i][j]=dp[i][j-1] || dp[i-1][j];
+                else dp[i][j]=false;
+            }
+        }
+        return dp[n1][n2];
+    }
+};
+
+// bottoms up approach(space optimized)
+class Solution {
+public:
+    bool isMatch(string s, string p) {
+        int n1=s.size(),n2=p.size();
+        vector<bool> prev(n2+1,false),curr(n2+1,false);
+        prev[0]=true;
+        for(int i=1; i<=n2; i++){
+            bool flag=true;
+            for(int j=1; j<=i;j++){
+                if(p[j-1]!='*') flag=false;
+            }
+            if(flag) prev[i]=true;
+        }
+        for(int i=1; i<=n1; i++){
+            for(int j=1;j<=n2; j++){
+                if(p[j-1]=='?' || p[j-1]==s[i-1]) curr[j]=prev[j-1];
+                else if (p[j-1]=='*') curr[j]=curr[j-1] || prev[j];
+                else curr[j]=false;
+            }
+            prev=curr;
+        }
+        return prev[n2];
+    }
+};
