@@ -714,3 +714,115 @@ public:
         return prev[n2];
     }
 };
+
+
+
+//115. Distinct Subsequences
+Solved
+Hard
+Topics
+Companies
+Amazon
+Mathworks
+Google
+Given two strings s and t, return the number of distinct subsequences of s which equals t.
+
+The test cases are generated so that the answer fits on a 32-bit signed integer.
+
+ 
+
+Example 1:
+
+Input: s = "rabbbit", t = "rabbit"
+Output: 3
+Explanation:
+As shown below, there are 3 ways you can generate "rabbit" from s.
+rabbbit
+rabbbit
+rabbbit
+Example 2:
+
+Input: s = "babgbag", t = "bag"
+Output: 5
+Explanation:
+As shown below, there are 5 ways you can generate "bag" from s.
+babgbag
+babgbag
+babgbag
+babgbag
+babgbag
+ 
+
+Constraints:
+
+1 <= s.length, t.length <= 1000
+s and t consist of English letters.
+
+
+
+// top down approach
+class Solution {
+private:
+    int f(int ind1,int ind2,string &s1,string &s2,vector<vector<int>> &dp){
+        if(ind2<0) return 1;
+        if(ind1<0) return 0;
+        if(dp[ind1][ind2]!=-1) return dp[ind1][ind2];
+        if(s1[ind1]==s2[ind2]){
+            return dp[ind1][ind2]= f(ind1-1,ind2-1,s1,s2,dp)+f(ind1-1,ind2,s1,s2,dp);
+        }
+        return dp[ind1][ind2]=f(ind1-1,ind2,s1,s2,dp);
+    }
+public:
+    int numDistinct(string s1, string s2) {
+        int n1=s1.size(),n2=s2.size();
+        vector<vector<int>> dp(n1+1,vector<int>(n2+1,0));
+        return f(n1-1,n2-1,s1,s2,dp);
+    }
+};
+
+
+
+// bottoms up solution
+class Solution {
+int MOD= 1e9+7;
+public:
+    int numDistinct(string s1, string s2) {
+        int n1=s1.size(),n2=s2.size();
+        vector<vector<int>> dp(n1+1,vector<int>(n2+1,0));
+        for(int i=0; i<=n1; i++){
+            dp[i][0]=1;
+        }
+        for(int i=1; i<=n1; i++){
+            for(int j=1;j<=n2;j++){
+                if(s1[i-1]==s2[j-1]) dp[i][j]=(dp[i-1][j-1]+dp[i-1][j])%MOD;
+                else{
+                    dp[i][j]=dp[i-1][j];
+                }
+            }
+        }
+        return int(dp[n1][n2]);
+    }
+};
+
+
+// bottoms up approach(space optimized)
+class Solution {
+int MOD= 1e9+7;
+public:
+    int numDistinct(string s1, string s2) {
+        int n1=s1.size(),n2=s2.size();
+        vector<int> prev(n2+1,0),curr(n2+1,0);
+        prev[0]=1;
+        for(int i=1; i<=n1; i++){
+            curr[0]=1;
+            for(int j=1;j<=n2;j++){
+                if(s1[i-1]==s2[j-1]) curr[j]=(prev[j-1]+prev[j])%MOD;
+                else{
+                    curr[j]=prev[j];
+                }
+            }
+            prev=curr;
+        }
+        return int(prev[n2]);
+    }
+};
