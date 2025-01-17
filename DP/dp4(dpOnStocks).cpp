@@ -282,3 +282,121 @@ public:
         return prev1[1];
     }
 };
+
+
+
+
+//714. Best Time to Buy and Sell Stock with Transaction Fee
+Solved
+Medium
+Topics
+Companies
+Hint
+Amazon
+Facebook
+You are given an array prices where prices[i] is the price of a given stock on the ith day, and an integer fee representing a transaction fee.
+
+Find the maximum profit you can achieve. You may complete as many transactions as you like, but you need to pay the transaction fee for each transaction.
+
+Note:
+
+You may not engage in multiple transactions simultaneously (i.e., you must sell the stock before you buy again).
+The transaction fee is only charged once for each stock purchase and sale.
+ 
+
+Example 1:
+
+Input: prices = [1,3,2,8,4,9], fee = 2
+Output: 8
+Explanation: The maximum profit can be achieved by:
+- Buying at prices[0] = 1
+- Selling at prices[3] = 8
+- Buying at prices[4] = 4
+- Selling at prices[5] = 9
+The total profit is ((8 - 1) - 2) + ((9 - 4) - 2) = 8.
+Example 2:
+
+Input: prices = [1,3,7,5,10,3], fee = 3
+Output: 6
+ 
+
+Constraints:
+
+1 <= prices.length <= 5 * 104
+1 <= prices[i] < 5 * 104
+0 <= fee < 5 * 104
+
+
+
+// top down approach
+class Solution {
+private:
+    int f(int ind,int buy,vector<int> &arr,int n,vector<vector<int>> &dp,int fee){
+        if(ind==n) return 0;
+        if(dp[ind][buy]!=-1) return dp[ind][buy];
+        if(buy){
+            int notBought=f(ind+1,1,arr,n,dp,fee);
+            int bought = -fee-arr[ind]+f(ind+1,0,arr,n,dp,fee);
+            return dp[ind][buy]= max(bought,notBought);
+        }
+        int notSell= f(ind+1,0,arr,n,dp,fee);
+        int sell=arr[ind]+f(ind+1,1,arr,n,dp,fee);
+        return dp[ind][buy]= max(sell,notSell);
+    }
+public:
+    int maxProfit(vector<int>& arr, int fee) {
+        int n=arr.size();
+        vector<vector<int>> dp(n+1,vector<int>(2,-1));
+        return  f(0,1,arr,n,dp,fee);
+    }
+};
+
+// bottoms up approach
+class Solution {
+public:
+    int maxProfit(vector<int>& arr, int fee) {
+        int n=arr.size();
+        vector<vector<int>> dp(n+1,vector<int>(2,0));
+        for(int i=n-1; i>=0; i--){
+            for(int j=1;j>=0;j--){
+                if(j){
+                    int notBought=dp[i+1][1];
+                    int bought = -fee-arr[i]+dp[i+1][0];
+                    dp[i][j]= max(bought,notBought);
+                }
+                else{
+                    int notSell= dp[i+1][0];
+                    int sell=arr[i]+dp[i+1][1];
+                    dp[i][j]= max(sell,notSell);
+                }
+            }
+        }
+        return  dp[0][1];
+    }
+};
+
+// bottoms up approach(space optimized)
+class Solution {
+public:
+    int maxProfit(vector<int>& arr, int fee) {
+        int n=arr.size();
+        vector<int> prev(2,0),curr(2,0);
+        for(int i=n-1; i>=0; i--){
+            for(int j=1;j>=0;j--){
+                if(j){
+                    int notBought=prev[1];
+                    int bought = -fee-arr[i]+prev[0];
+                    curr[j]= max(bought,notBought);
+                }
+                else{
+                    int notSell= prev[0];
+                    int sell=arr[i]+prev[1];
+                    curr[j]= max(sell,notSell);
+                }
+            }
+            prev=curr;
+        }
+        return  prev[1];
+    }
+};
+
