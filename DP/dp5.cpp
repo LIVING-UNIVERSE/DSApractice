@@ -419,3 +419,84 @@ public:
         return ans;
     }
 };
+
+
+
+
+//1048. Longest String Chain
+Solved
+1599
+Medium
+Topics
+Companies
+Hint
+You are given an array of words where each word consists of lowercase English letters.
+
+wordA is a predecessor of wordB if and only if we can insert exactly one letter anywhere in wordA without changing the order of the other characters to make it equal to wordB.
+
+For example, "abc" is a predecessor of "abac", while "cba" is not a predecessor of "bcad".
+A word chain is a sequence of words [word1, word2, ..., wordk] with k >= 1, where word1 is a predecessor of word2, word2 is a predecessor of word3, and so on. A single word is trivially a word chain with k == 1.
+
+Return the length of the longest possible word chain with words chosen from the given list of words.
+
+ 
+
+Example 1:
+
+Input: words = ["a","b","ba","bca","bda","bdca"]
+Output: 4
+Explanation: One of the longest word chains is ["a","ba","bda","bdca"].
+Example 2:
+
+Input: words = ["xbc","pcxbcf","xb","cxbc","pcxbc"]
+Output: 5
+Explanation: All the words can be put in a word chain ["xb", "xbc", "cxbc", "pcxbc", "pcxbcf"].
+Example 3:
+
+Input: words = ["abcd","dbqca"]
+Output: 1
+Explanation: The trivial word chain ["abcd"] is one of the longest word chains.
+["abcd","dbqca"] is not a valid word chain because the ordering of the letters is changed.
+ 
+
+Constraints:
+
+1 <= words.length <= 1000
+1 <= words[i].length <= 16
+words[i] only consists of lowercase English letters.
+
+
+// solution
+class Solution {
+private:
+    static bool comparator(string a, string b){
+        return a.size()<b.size();
+    }
+public:
+    int longestStrChain(vector<string>& arr) {
+        int n=arr.size();
+        sort(arr.begin(),arr.end(),comparator);
+        vector<int> dp(n,1);
+        int res=1;
+        for(int i=1; i<n; i++){
+            for(int j=0;j<i;j++){
+                if(arr[j].size()==arr[i].size()-1 && dp[j]+1>=dp[i]){
+                    int count=0,a=0,b=0;
+                    while(a<arr[i].size() && b<arr[j].size()){
+                        if(arr[i][a]!=arr[j][b]){
+                            a++;count++;
+                        }
+                        else{
+                            a++;b++;
+                        }
+                    }
+                    if(count<=1){
+                        dp[i]=dp[j]+1;
+                    }
+                }
+            }
+            res=max(res,dp[i]);
+        }
+        return res;
+    }
+};
