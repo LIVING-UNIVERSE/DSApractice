@@ -148,3 +148,207 @@ public:
         return v.size();
     }
 };
+
+
+
+// NOTE-> important for LIS.
+// so there are three methods to solve LIS(longest increasing subsequence) problem ->
+// (1).  using simple recursion and memoization for memoization you have to index shifiting which is done by making the whole logic as it is 
+//      but in dp array you have to insert (ind + amount by which index is shifted); 
+//      just changes in dp array
+//      t: O(n*n);
+//      s: O(n*n) + O(n)
+//            ^      ^
+//   for dp array  recursion call stack   
+
+class Solution {
+  private:
+    int f(int ind,int prev_ind,vector<int> &arr,vector<vector<int>> &dp){
+        if(ind==arr.size()) return 0;
+        if(dp[ind][prev_ind+1]!=-1) return dp[ind][prev_ind+1];
+        int notTaken=f(ind+1,prev_ind,arr,dp);
+        int taken=0;
+        if(prev_ind==-1 || arr[ind]>arr[prev_ind]){
+            taken=1+f(ind+1,ind,arr,dp);
+        }
+        return dp[ind][prev_ind+1]=max(taken,notTaken);
+    }
+  public:
+    // Function to find length of longest increasing subsequence.
+    int lis(vector<int>& arr) {
+        int n=arr.size();
+        vector<vector<int>> dp(n+1,vector<int>(n+1,-1));
+        return f(0,-1,arr,dp);
+    }
+};
+
+
+// (2.) using tabular form and space optimization
+//    t:O(n*n)
+//    s:O(n*n)
+
+class Solution {
+  public:
+    // Function to find length of longest increasing subsequence.
+    int lis(vector<int>& arr) {
+        int n=arr.size();
+        vector<vector<int>> dp(n+1,vector<int>(n+1,0));
+        for(int i=n-1; i>=0; i--){
+            for(int j=n-1;j>=-1; j--){
+                int notTaken=dp[i+1][j+1];
+                int taken=0;
+                if(j==-1 || arr[i]>arr[j]){
+                    taken=1+dp[i+1][i+1];
+                }
+                dp[i][j+1]=max(taken,notTaken);
+            }
+        }
+        return dp[0][0];
+    }
+};
+
+
+//     t:O(n*n)
+//     s:O(n)
+class Solution {
+  public:
+    // Function to find length of longest increasing subsequence.
+    int lis(vector<int>& arr) {
+        int n=arr.size();
+        // vector<vector<int>> dp(n+1,vector<int>(n+1,0));
+        vector<int> prev(n+1,0),curr(n+1,0);
+        for(int i=n-1; i>=0; i--){
+            for(int j=n-1;j>=-1; j--){
+                int notTaken=prev[j+1];
+                int taken=0;
+                if(j==-1 || arr[i]>arr[j]){
+                    taken=1+prev[i+1];
+                }
+                curr[j+1]=max(taken,notTaken);
+            }
+            prev=curr;
+        }
+        return prev[0];
+    }
+};
+
+
+
+//  (3). You can also do this in O(nlogn) time using binary search on dp
+//    t:O(n*log(n))
+//    s:O(n);
+class Solution {
+public:
+    int lengthOfLIS(vector<int>& arr) {
+        int n=arr.size();
+        vector<int> v;
+        v.push_back(arr[0]);
+        for(int i=1; i<n ;i++){
+            if(arr[i]>v[v.end()-1-v.begin()]){
+                v.push_back(arr[i]);
+            }
+            else{
+                int ind=lower_bound(v.begin(),v.end(),arr[i])-v.begin();
+                v[ind]=arr[i];
+            }
+        }
+        return v.size();
+    }
+};
+
+
+
+//     (4). This tabular method has no intuitive logic you have to learn/cram it ; this is specifically used for printing the
+//         exact LIS for a given array
+//         t:O(n*n)
+//         s:O(n)
+
+class Solution {
+public:
+    int lengthOfLIS(vector<int>& arr) {
+        int n=arr.size();
+        vector<int> dp(n,1);
+        int res=1;
+        for(int i=1; i<n; i++){
+            for(int j=i-1; j>=0; j--){
+                if(arr[j]<arr[i]){
+                    dp[i]=max(dp[i],dp[j]+1);
+                }
+            }
+            res=max(res,dp[i]);
+        }
+        return res;
+    }
+};
+
+
+
+
+
+//Print Longest Increasing Subsequence
+Difficulty: MediumAccuracy: 51.81%Submissions: 28K+Points: 4
+Given an integer n and an array of integers arr, return the Longest Increasing Subsequence which is Index-wise lexicographically smallest.
+Note - A subsequence S1 is Index-wise lexicographically smaller than a subsequence S2 if in the first position where S1 and S2 differ, subsequence S1 has an element that appears earlier in the array  arr than the corresponding element in S2.
+LIS  of a given sequence is defined as that longest possible subsequence all of whose elements are in increasing order. For example, the length of LIS for {10, 22, 9, 33, 21, 50, 41, 60, 80} is 6 and the LIS is {10, 22, 33, 50, 60, 80}. 
+
+Example 1:
+
+Input:
+n = 16
+arr = [0,8,4,12,2,10,6,14,1,9,5,13,3,11,7,15]
+Output:
+0 4 6 9 13 15 
+Explanation:
+longest Increasing subsequence is 0 4 6 9 13 15  and the length of the longest increasing subsequence is 6.
+Example 2:
+
+Input:
+n = 1
+arr = [1]
+Output:
+1
+// Your Task:
+// You don't need to read input or print anything. Your task is to complete the function longestIncreasingSubsequence() which takes integer n and array arr and returns the longest increasing subsequence.
+
+// Expected Time Complexity: O(n2)
+// Expected Space Complexity: O(n)
+
+// Constraint:
+// 1 <= n < = 103
+// 0 <= arr[i] <= 109
+
+
+
+// using the same t:O(n*n) tabular approach stated above
+class Solution {
+  public:
+    vector<int> longestIncreasingSubsequence(int n, vector<int>& arr) {
+        if(n==1) return {1};
+        vector<int> dp(n,1);
+        vector<int> temp(n,0);
+        int res=0,ind;
+        for(int i=1; i<n; i++){
+            temp[i]=i;
+            for(int j=i-1; j>=0;j--){
+                if(arr[j]<arr[i] && dp[j]+1>=dp[i]){
+                    temp[i]=j;
+                    dp[i]=dp[j]+1;
+                }
+            }
+            if(dp[i]>res){
+                res=dp[i];
+                ind=i;
+            }
+        }
+        vector<int> ans;
+        while(res>0){
+            ans.push_back(arr[ind]);
+            ind =temp[ind];
+            res--;
+        }
+        reverse(ans.begin(),ans.end());
+        return ans;
+    }
+};
+
+
