@@ -263,3 +263,131 @@ public:
         return -1;
     }
 };
+
+
+
+
+//53. Maximum Subarray
+Attempted
+Medium
+Topics
+Companies
+LinkedIn
+Amazon
+Apple
+Microsoft
+Adobe
+Given an integer array nums, find the 
+subarray
+ with the largest sum, and return its sum.
+
+ 
+
+Example 1:
+
+Input: nums = [-2,1,-3,4,-1,2,1,-5,4]
+Output: 6
+Explanation: The subarray [4,-1,2,1] has the largest sum 6.
+Example 2:
+
+Input: nums = [1]
+Output: 1
+Explanation: The subarray [1] has the largest sum 1.
+Example 3:
+
+Input: nums = [5,4,-1,7,8]
+Output: 23
+Explanation: The subarray [5,4,-1,7,8] has the largest sum 23.
+ 
+
+Constraints:
+
+1 <= nums.length <= 105
+-104 <= nums[i] <= 104
+ 
+
+Follow up: If you have figured out the O(n) solution, try coding another solution using the divide and conquer approach, which is more subtle.
+
+
+// brute force
+class Solution {
+public:
+    int maxSubArray(vector<int>& arr) {
+        int n=arr.size();
+        int res=INT_MIN;
+        for(int i=0; i<n ;i++){
+            int sum=0;
+            for(int j=i; j<n; j++){
+                sum+=arr[j];
+                res=max(res,sum);
+            }
+        }
+        return res;
+    }
+};
+
+
+// optimal solution(Kadane's algorithm)
+class Solution {
+public:
+    int maxSubArray(vector<int>& arr) {
+        int n=arr.size();
+        int res=INT_MIN;
+        for(int i=0; i<n ;i++){
+            int sum=0;
+            for(int j=i; j<n; j++){
+                sum+=arr[j];
+                res=max(res,sum);
+            }
+        }
+        return res;
+    }
+};
+
+
+// kadane's second approach
+class Solution {
+public:
+    int maxSubArray(vector<int>& arr) {
+        int n=arr.size();
+        int res=-1e8;
+        int maxEnding=-1e8;
+        for(int i=0; i<n ;i++){
+            maxEnding=max(arr[i],maxEnding+arr[i]);
+            res=max(res,maxEnding);
+        }
+        return res;
+    }
+};
+
+
+
+// divide and conquer approach
+class Solution {
+    // divide and conquer approach (O(n*logn))
+    int f(int l,int r,vector<int> &arr){
+        if(l==r) return arr[l];
+        int p= l+(r-l)/2;
+        int lss=f(l,p,arr);
+        int rss=f(p+1,r,arr);
+        int css;
+        int sum=0,left=INT_MIN;
+        for(int i=p;i>=l;i--){
+            sum+=arr[i];
+            left=max(left,sum);
+        }
+        sum=0;
+        int right=INT_MIN;
+        for(int i=p+1; i<=r; i++){
+            sum+=arr[i];
+            right=max(right,sum);
+        }
+        css=left+right;
+        return max(css,max(rss,lss));
+    }
+public:
+    int maxSubArray(vector<int>& arr) {
+        int n=arr.size();
+        return f(0,n-1,arr);
+    }
+};
