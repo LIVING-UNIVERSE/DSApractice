@@ -326,3 +326,127 @@ int Solution::solve(vector<int> &arr, int k) {
     }
     return count;
 }
+
+
+
+
+
+//229. Majority Element II
+Solved
+Medium
+Topics
+Companies
+Hint
+Amazon
+Microsoft
+Adobe
+Given an integer array of size n, find all elements that appear more than ⌊ n/3 ⌋ times.
+
+ 
+
+Example 1:
+
+Input: nums = [3,2,3]
+Output: [3]
+Example 2:
+
+Input: nums = [1]
+Output: [1]
+Example 3:
+
+Input: nums = [1,2]
+Output: [1,2]
+ 
+
+Constraints:
+
+1 <= nums.length <= 5 * 104
+-109 <= nums[i] <= 109
+ 
+
+Follow up: Could you solve the problem in linear time and in O(1) space?
+
+
+
+// brute force t:O(n^2) s:O(1)
+class Solution {
+public:
+    vector<int> majorityElement(vector<int>& arr) {
+        // brute force
+        int n=arr.size();
+        vector<int> ans;
+        for(int i=0;i<n; i++){
+            int count=0;
+            for(int j=i; j<n ;j++){
+                if(arr[j]==arr[i]) count++;
+            }
+            if(count>(n/3)){
+                if(ans.size()==0) ans.push_back(arr[i]);
+                else{
+                    if(arr[i]!=ans[0]) ans.push_back(arr[i]);
+                    if(ans.size()==2) break;
+                }
+            }
+        }
+        return ans;
+    }
+};
+
+
+
+// better solution t:O(n) s:O(n)
+class Solution {
+public:
+    vector<int> majorityElement(vector<int>& arr) {
+        int n=arr.size();
+        unordered_map<int,int> m;
+        for(int i=0; i<n ; i++){
+            m[arr[i]]++;
+        }
+        vector<int> v;
+        for(auto x: m){
+            if(x.second>(n/3)) v.push_back(x.first);
+        }
+        return v;
+    }
+};
+
+
+// optimal solution t:O(n) s:O(1) moore's voting algorithm
+class Solution {
+public:
+    vector<int> majorityElement(vector<int>& arr) {
+        // moore's voting algorithm for (n/3).
+        int n=arr.size();
+        int ele1,ele2,count1=0,count2=0;
+        for(int i=0; i<n; i++){
+            if(count1==0 && arr[i]!=ele2){
+                ele1=arr[i];
+                count1=1;
+            }
+            else if(count2==0 && arr[i]!=ele1){
+                ele2=arr[i];
+                count2=1;
+            }
+            else if(arr[i]==ele1){
+                count1++;
+            }
+            else if(arr[i]==ele2){
+                count2++;
+            }
+            else{
+                count1--;
+                count2--;
+            }
+        }
+        vector<int> v;
+        count1=0;count2=0;
+        for(int i=0; i<n; i++){
+            if(arr[i]==ele1) count1++;
+            if(arr[i]==ele2) count2++;
+        }
+        if(count1> n/3) v.push_back(ele1);
+        if(count2> n/3 && ele2!=ele1) v.push_back(ele2);
+        return v;
+    }
+};
