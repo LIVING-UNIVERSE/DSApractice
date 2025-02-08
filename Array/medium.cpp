@@ -817,3 +817,116 @@ public:
         return res;
     }
 };
+
+
+
+
+//54. Spiral Matrix
+Solved
+Medium
+Topics
+Companies
+Hint
+Given an m x n matrix, return all elements of the matrix in spiral order.
+
+ 
+
+Example 1:
+
+
+Input: matrix = [[1,2,3],[4,5,6],[7,8,9]]
+Output: [1,2,3,6,9,8,7,4,5]
+Example 2:
+
+
+Input: matrix = [[1,2,3,4],[5,6,7,8],[9,10,11,12]]
+Output: [1,2,3,4,8,12,11,10,9,5,6,7]
+ 
+
+Constraints:
+
+m == matrix.length
+n == matrix[i].length
+1 <= m, n <= 10
+-100 <= matrix[i][j] <= 100
+
+
+// optimal solution 1
+class Solution {
+private:
+    void f(int r,int c,vector<int> &v,vector<vector<int>> &arr){
+        int n=arr.size(),m=arr[0].size();
+        if(r==(n-r-1)){
+            // row matrix
+            for(int i=c;i<=(m-c-1); i++){
+                v.push_back(arr[r][i]);
+            }
+            return ;
+        }
+        if(c==(m-c-1)){
+            // column matrix
+            for(int i=r;i<=(n-r-1);i++){
+                v.push_back(arr[i][c]);
+            }
+            return ;
+        }
+        for(int i=c; i<=(m-c-1); i++){
+            v.push_back(arr[r][i]);
+        }
+        for(int i=r+1;i<=(n-r-1);i++){
+            v.push_back(arr[i][m-c-1]);
+        }
+        for(int i=m-c-2; i>=c; i--){
+            v.push_back(arr[n-r-1][i]);
+        }
+        for(int i=n-r-2; i>r; i--){
+            v.push_back(arr[i][c]);
+        }
+    }
+public:
+    vector<int> spiralOrder(vector<vector<int>>& arr) {
+        int n=arr.size(),m=arr[0].size();
+        vector<int> v;
+        for(int i=0; i<((min(n,m)+1)/2); i++){
+            f(i,i,v,arr);
+        }
+        return v;
+    }
+};
+
+
+// optimal solution 2
+class Solution {
+public:
+    vector<int> spiralOrder(vector<vector<int>>& arr) {
+        int n=arr.size(),m=arr[0].size();
+        int top=0,bottom=n-1,left=0,right=m-1;
+        vector<int> v;
+        while(top<bottom && left<right){
+            for(int i=left; i<=right; i++){
+                v.push_back(arr[top][i]);
+            }
+            for(int i=top+1; i<=bottom; i++){
+                v.push_back(arr[i][right]);
+            }
+            for(int i=right-1; i>=left; i--){
+                v.push_back(arr[bottom][i]);
+            }
+            for(int i=bottom-1; i>top; i--){
+                v.push_back(arr[i][left]);
+            }
+            top++;bottom--;left++;right--;
+        }
+        if(top==bottom ){
+            for(int i=left; i<=right; i++){
+                v.push_back(arr[top][i]);
+            }
+        }
+        else if(left==right){
+            for(int i=top; i<=bottom; i++){
+                v.push_back(arr[i][right]);
+            }
+        }
+        return v;
+    }
+};
