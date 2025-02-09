@@ -450,3 +450,136 @@ public:
         return v;
     }
 };
+
+
+
+
+
+//Missing And Repeating
+Difficulty: EasyAccuracy: 24.83%Submissions: 558K+Points: 2Average Time: 30m
+Given an unsorted array arr of positive integers. One number a from the set [1, 2,....,n] is missing and one number b occurs twice in the array. Find numbers a and b.
+
+Note: The test cases are generated such that there always exists one missing and one repeating number within the range [1,n].
+
+Examples:
+
+Input: arr[] = [2, 2]
+Output: [2, 1]
+Explanation: Repeating number is 2 and smallest positive missing number is 1.
+Input: arr[] = [1, 3, 3] 
+Output: [3, 2]
+Explanation: Repeating number is 3 and smallest positive missing number is 2.
+Input: arr[] = [4, 3, 6, 2, 1, 1]
+Output: [1, 5]
+Explanation: Repeating number is 1 and the missing number is 5.
+Constraints:
+2 ≤ arr.size() ≤ 106
+1 ≤ arr[i] ≤ arr.size()
+
+
+// brute force t:O(n^2)  s:O(1)
+class Solution {
+  public:
+    vector<int> findTwoElement(vector<int>& arr) {
+        // brute force
+        int n=arr.size();
+        int A,B;
+        for(int i=1; i<=n; i++){
+            int a=-1,count=0;
+            for(int j=0;j<n; j++){
+                if(arr[j]==i){
+                    a=i;count++;
+                }
+            }
+            if(a==-1) A=i;
+            if(count==2) B=i;
+        }
+        return {B,A};
+    }
+};
+
+
+// better solution t:O(n) s:O(n)
+class Solution {
+  public:
+    vector<int> findTwoElement(vector<int>& arr) {
+        int n=arr.size();
+        vector<int> v(n+1,0);
+        for(int i=0; i<n; i++){
+            v[arr[i]]++;
+        }
+        int a,b;
+        for(int i=1; i<v.size(); i++){
+            if(v[i]==0) a=i;
+            if(v[i]==2) b=i;
+        }
+        return {b,a};
+    }
+};
+
+
+
+// optimal solution I t:O(n) s:O(1)  using mathemaical formula
+class Solution {
+  public:
+    vector<int> findTwoElement(vector<int>& arr) {
+        // optimal solution 
+        long long n=arr.size();
+        long long ns=n*(n+1)/2;
+        long long nss=n*(n+1)*(2*n+1)/6;
+        long long ss=0,s=0;
+        for(int i=0; i<n; i++){
+            s+=arr[i];
+            ss+=(long long)arr[i]*(long long)arr[i];
+        }
+        long long x=ns-s,y=nss-ss;
+        long long a= (x+y/x)/2;
+        long long b=a-x;
+        return {(int)b,(int)a};
+    }
+};
+
+
+
+// optimal solution II t:O(n) s:O(1)  using xor
+class Solution {
+  public:
+    vector<int> findTwoElement(vector<int>& arr) {
+        // optimal solution 2 (using XOR)
+        int n=arr.size();
+        int c=0;
+        for(int i=0; i<n; i++){
+            c^=arr[i];
+            c^=(i+1);
+        }
+        int bitCount=0;
+        while((c&(1<<bitCount))==0){
+            bitCount++;
+        }
+        int one=0,zero=0;
+        for(int i=0; i<n; i++){
+            if((arr[i]&(1<<bitCount))==0){
+                zero^=arr[i];
+            }
+            else{
+                one^=arr[i];
+            }
+        }
+        for(int i=1; i<=n; i++){
+            if((i&(1<<bitCount))==0){
+                zero^=i;
+            }
+            else{
+                one^=i;
+            }
+        }
+        for(int i=0; i<n ;i++){
+            if(arr[i]==zero){
+                return {zero,one};
+            }
+            else if(arr[i]==one){
+                return {one,zero};
+            }
+        }
+    }
+};
