@@ -107,5 +107,113 @@ class Solution {
             }
             return num;
         }
-    };
+};
+
+
+
+
+
+//78. Subsets
+Solved
+Medium
+Topics
+Companies
+Facebook
+Amazon
+Google
+Bloomberg
+Microsoft
+Given an integer array nums of unique elements, return all possible 
+subsets
+ (the power set).
+
+The solution set must not contain duplicate subsets. Return the solution in any order.
+
+ 
+
+Example 1:
+
+Input: nums = [1,2,3]
+Output: [[],[1],[2],[1,2],[3],[1,3],[2,3],[1,2,3]]
+Example 2:
+
+Input: nums = [0]
+Output: [[],[0]]
+ 
+
+Constraints:
+
+1 <= nums.length <= 10
+-10 <= nums[i] <= 10
+All the numbers of nums are unique.
+
+
+
+// dp solution (top down)
+class Solution {
+    private:
+        vector<vector<int>> f(int ind,vector<int> &arr){
+            if(ind==0){
+                return {{},{arr[0]}};
+            }
+            vector<vector<int>> temp=f(ind-1,arr);
+            vector<vector<int>> ans;
+            for(int i=0; i<temp.size(); i++){
+                ans.push_back(temp[i]);
+                temp[i].push_back(arr[ind]);
+                ans.push_back(temp[i]);
+            }
+            return ans;
+        }
+    public:
+        vector<vector<int>> subsets(vector<int>& arr) {
+            int n=arr.size();
+            return f(n-1,arr);
+        }
+};
+
+// dp solution (bottoms up)
+class Solution {
+    public:
+        vector<vector<int>> subsets(vector<int>& arr) {
+            int n=arr.size();
+            vector<vector<vector<int>>> dp(n);
+            dp[0]={{},{arr[0]}};
+            for(int i=1; i<n; i++){
+                vector<vector<int>> temp=dp[i-1];
+                vector<vector<int>> ans;
+                for(int j=0;j<temp.size(); j++){
+                    ans.push_back(temp[j]);
+                    temp[j].push_back(arr[i]);
+                    ans.push_back(temp[j]);
+                }
+                dp[i]=ans;
+            }
+            return dp[n-1];
+        }
+};
+
+
+// bit manipulation
+class Solution {
+    public:
+        vector<vector<int>> subsets(vector<int>& arr) {
+            int n=arr.size();
+            int p=1<<n;
+            vector<vector<int>> ans;
+            for(int i=0; i<p; i++){
+                vector<int> v;
+                int k=p;
+                for(int j=1; j<=n; j++){
+                    if((p>>j)&i){
+                        v.push_back(arr[j-1]);
+                    }
+                }
+                ans.push_back(v);
+            }
+            return ans;
+        }
+};
+
+
 
