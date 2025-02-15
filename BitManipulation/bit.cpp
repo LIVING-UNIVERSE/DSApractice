@@ -331,4 +331,42 @@ class Solution{
 
 
 
+//Count total set bits
+Difficulty: MediumAccuracy: 35.77%Submissions: 216K+Points: 4
+You are given a number n. Find the total count of set bits for all numbers from 1 to n (both inclusive).
+
+Examples :
+
+Input: n = 4
+Output: 5
+Explanation: For numbers from 1 to 4. For 1: 0 0 1 = 1 set bits For 2: 0 1 0 = 1 set bits For 3: 0 1 1 = 2 set bits For 4: 1 0 0 = 1 set bits Therefore, the total set bits is 5.
+Input: n = 17
+Output: 35
+Explanation: From numbers 1 to 17(both inclusive), the total number of set bits is 35.
+Expected Time Complexity: O(logn)
+Expected Auxiliary Space: O(1)
+
+Constraints:
+1 ≤ n ≤ 108
+
+
+// O(logn) solution
+class Solution{
+    private:
+        int f(int n){
+            int bitCount=-1;
+            while(n!=0){
+                n=n>>1;
+                bitCount++;
+            }
+            return bitCount;
+        }
+    public:
+    int countSetBits(int n){
+        if(n==0) return 0;
+        int count=f(n);
+        return count*(1<<(count-1)) + (n-(1<<count)+1) + countSetBits(n-(1<<count));
+    }
+};
+
 
