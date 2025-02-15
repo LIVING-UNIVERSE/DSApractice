@@ -370,3 +370,77 @@ class Solution{
 };
 
 
+
+
+
+//29. Divide Two Integers
+Solved
+Medium
+Topics
+Companies
+Given two integers dividend and divisor, divide two integers without using multiplication, division, and mod operator.
+
+The integer division should truncate toward zero, which means losing its fractional part. For example, 8.345 would be truncated to 8, and -2.7335 would be truncated to -2.
+
+Return the quotient after dividing dividend by divisor.
+
+Note: Assume we are dealing with an environment that could only store integers within the 32-bit signed integer range: [−231, 231 − 1]. For this problem, if the quotient is strictly greater than 231 - 1, then return 231 - 1, and if the quotient is strictly less than -231, then return -231.
+
+ 
+
+Example 1:
+
+Input: dividend = 10, divisor = 3
+Output: 3
+Explanation: 10/3 = 3.33333.. which is truncated to 3.
+Example 2:
+
+Input: dividend = 7, divisor = -3
+Output: -2
+Explanation: 7/-3 = -2.33333.. which is truncated to -2.
+ 
+
+Constraints:
+
+-231 <= dividend, divisor <= 231 - 1
+divisor != 0
+
+
+
+// brute force solution
+class Solution {
+    public:
+        int divide(int dividend, int divisor) {
+            int divi=abs(dividend),div=abs(divisor);
+            int count=0;
+            while(divi>=div){
+                divi-=div;
+                count++;
+            }
+            if(dividend*divisor<0) return -count;
+            return count;
+        }
+};
+
+
+// optimal solution
+class Solution {
+    public:
+        int divide(int dividend, int divisor) {
+            long long n=abs((long long)dividend);
+            long long d=abs((long long)divisor);
+            long long q=0;
+            while(n>=d){
+                long long bitCount=0;
+                while((d*(1LL<<bitCount))<=n){
+                    bitCount++;
+                }
+                q+=(1LL<<(bitCount-1));
+                n-=d*(1LL<<(bitCount-1));
+            }
+            long long test=((long long)dividend)*((long long)divisor);
+            if((q==pow(2,31)) && (test>0)) return INT_MAX;
+            else if((q==pow(2,31)) && (test<0)) return INT_MIN;
+            return (test<0)?-q:q;
+        }
+    };
