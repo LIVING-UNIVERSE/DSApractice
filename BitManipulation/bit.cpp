@@ -444,3 +444,70 @@ class Solution {
             return (test<0)?-q:q;
         }
     };
+
+
+
+
+
+// some basic maths but important
+//Prime Number
+Difficulty: BasicAccuracy: 22.2%Submissions: 327K+Points: 1
+Given a number n, determine whether it is a prime number or not. A prime number is a number greater than 1 that has no positive divisors other than 1 and itself.
+
+Examples :
+
+Input: n = 7
+Output: true
+Explanation: 7 has exactly two divisors: 1 and 7, making it a prime number.
+Input: n = 25
+Output: false
+Explanation: 25 has more than two divisors: 1, 5, and 25, so it is not a prime number.
+Input: n = 1
+Output: false
+Explanation: 1 has only one divisor (1 itself), which is not sufficient for it to be considered prime.
+Constraints:
+1 ≤ n ≤ 109
+
+
+
+// brute force
+class Solution{
+    public:
+    bool isPrime(int n){
+        if(n==1) return false;
+        for(int i=2; i*i<=n; i++){
+            if(n%i==0) return false;
+        }
+        return true;
+    }
+};
+
+
+// efficient solution
+class Solution {
+    public:
+      bool isPrime(int n) {
+          if(n==1) return false;
+          for(int i=2; i*i<=n; i++){
+              if(n%i==0){
+                  return false;
+              }
+          }
+          return true;
+      }
+};
+
+
+// optimal solution
+class Solution {
+    public:
+      bool isPrime(int n) {
+          if(n==1) return false;
+          for(int i=2; i*i<=n; i++){
+              if(n%i==0){
+                  return false;
+              }
+          }
+          return true;
+      }
+  };
