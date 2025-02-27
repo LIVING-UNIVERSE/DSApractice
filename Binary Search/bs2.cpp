@@ -694,4 +694,136 @@ class Solution {
           }
           return high;
       }
-  };
+};
+
+
+
+
+//4. Median of Two Sorted Arrays
+Solved
+Hard
+Topics
+Companies
+Amazon
+Adobe
+Goldman Sachs
+Microsoft
+Apple
+Given two sorted arrays nums1 and nums2 of size m and n respectively, return the median of the two sorted arrays.
+
+The overall run time complexity should be O(log (m+n)).
+
+ 
+
+Example 1:
+
+Input: nums1 = [1,3], nums2 = [2]
+Output: 2.00000
+Explanation: merged array = [1,2,3] and median is 2.
+Example 2:
+
+Input: nums1 = [1,2], nums2 = [3,4]
+Output: 2.50000
+Explanation: merged array = [1,2,3,4] and median is (2 + 3) / 2 = 2.5.
+ 
+
+Constraints:
+
+nums1.length == m
+nums2.length == n
+0 <= m <= 1000
+0 <= n <= 1000
+1 <= m + n <= 2000
+-106 <= nums1[i], nums2[i] <= 106
+
+
+
+// brute force O(m*n)
+class Solution {
+    private:
+        int f(vector<int> &a,vector<int> &b,int ind){
+            int n=a.size(),m=b.size();
+            if(n==0) return b[ind-1];
+            if(m==0) return a[ind-1];
+            int i=0,j=0,prev;
+            if(a[0]<b[0]){
+                prev=a[0];i++;
+            }
+            else{
+                prev=b[0];j++;
+            }
+            int count=1;
+            if(ind==1) return prev;
+            while(i<n && j<m){
+                if(a[i]<b[j]){
+                    prev=a[i];count++;i++;
+                }
+                else{
+                    prev=b[j];count++;j++;
+                }
+                if(count==ind) return prev;
+            }
+            count++;
+            if(i==n){
+                while(count<ind){
+                    count++;j++;
+                }
+                return b[j];
+            }
+            if(j==m){
+                while(count<ind){
+                    count++;i++;
+                }
+                return a[i];
+            }
+            return -1;
+        }
+    public:
+        double findMedianSortedArrays(vector<int>& a, vector<int>& b) {
+            int n=a.size(),m=b.size();
+            if((n+m)%2==0){
+                int ele1=f(a,b,(n+m)/2);
+                int ele2=f(a,b,(n+m)/2+1);
+                return ((double)ele1+ele2)/2.0;
+            }
+            return (double)f(a,b,(n+m)/2+1);
+        }
+};
+
+
+
+// optimal soluton O(log(min(n,m)))
+class Solution {
+    public:
+        double findMedianSortedArrays(vector<int>& a, vector<int>& b) {
+            int n=a.size(),m=b.size();
+            if(n>m) return findMedianSortedArrays(b,a);
+            int t=n+m;
+            int low=0,high=n;
+            while(low<=high){
+                int mid1=(low+high)/2;
+                int mid2=t/2-mid1;
+                int l1=INT_MIN,l2=INT_MIN;
+                int r1=INT_MAX,r2=INT_MAX;
+                if(mid1<n) r1=a[mid1];
+                if(mid2<m) r2=b[mid2];
+                if(mid1-1>=0) l1=a[mid1-1];
+                if(mid2-1>=0) l2=b[mid2-1];
+                if(l2>r1){
+                    low=mid1+1;
+                }
+                else if(r2>=l1 && r1>=l2){
+                    if(t%2==0){
+                        return ((double)max(l1,l2)+(double)min(r1,r2))/2.0;
+                    }
+                    else{
+                        return ((double)min(r1,r2));
+                    }
+                }
+                else{
+                    high=mid1-1;
+                }
+            }
+            return 0;
+        }
+};
