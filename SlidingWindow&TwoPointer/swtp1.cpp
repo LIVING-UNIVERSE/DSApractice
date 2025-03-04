@@ -277,3 +277,99 @@ class Solution {
             return res;
         }
 };
+
+
+
+//Find length of the longest subarray containing atmost two distinct integers
+Difficulty: MediumAccuracy: 47.98%Submissions: 95K+Points: 4Average Time: 30m
+Given an array arr[] containing positive elements, the task is to find the length of the longest subarray of an input array containing at most two distinct integers.
+
+Examples:
+
+Input: arr[]= [2, 1, 2]
+Output: 3
+Explanation: The entire array [2, 1, 2] contains at most two distinct integers (2 and 1). Hence, the length of the longest subarray is 3.
+Input: arr[] = [3, 1, 2, 2, 2, 2]
+Output: 5
+Explanation: The longest subarray containing at most two distinct integers is [1, 2, 2, 2, 2], which has a length of 5. The subarray starts at the second element 1 and ends at the last element. It contains at most two distinct integers (1 and 2).
+Constraints:
+1 ≤ arr.size() ≤ 105
+1 ≤ arr[i] <=105
+
+
+// brute force
+// t:O(n^2) sp:O(1)
+class Solution {
+    public:
+      int totalElements(vector<int> &arr) {
+          int n=arr.size();
+          if(n==1) return 1;
+          int maxLength=0;
+          for(int i=0; i<n; i++){
+              unordered_map<int,int> m;
+              int length=0;
+              for(int j=i;j<n;j++){
+                  if(m.find(arr[j])==m.end() && m.size()==2){
+                      break;
+                  }
+                  m[arr[j]]++;
+                  length++;
+              }
+              maxLength=max(length,maxLength);
+          }
+          return maxLength;
+      }
+};
+
+
+// better solution 
+// t:O(n)+O(n) sp:O(1)
+class Solution {
+    public:
+      int totalElements(vector<int> &arr) {
+          int n=arr.size();
+          if(n==1) return 1;
+          int maxLength=0;
+          for(int i=0; i<n; i++){
+              unordered_map<int,int> m;
+              int length=0;
+              for(int j=i;j<n;j++){
+                  if(m.find(arr[j])==m.end() && m.size()==2){
+                      break;
+                  }
+                  m[arr[j]]++;
+                  length++;
+              }
+              maxLength=max(length,maxLength);
+          }
+          return maxLength;
+      }
+};
+
+
+
+// optimal solution
+// t:O(n) sp:O(1)
+class Solution {
+    public:
+      int totalElements(vector<int> &arr) {
+          int n=arr.size();
+          if(n==1) return 1;
+          int l=0,r=0,length=0,maxLength=0;
+          unordered_map<int,int> m;
+          while(r<n){
+              m[arr[r]]++;
+              if(m.size()>=3){
+                  m[arr[l]]--;
+                  if(m[arr[l]]==0){
+                      m.erase(arr[l]);
+                  }
+                  l++;
+              }
+              length=r-l+1;
+              maxLength=max(length,maxLength);
+              r++;
+          }
+          return maxLength;
+      }
+  };
