@@ -92,3 +92,95 @@ class Solution {
             return res;
         }
 };
+
+
+
+//1614. Maximum Nesting Depth of the Parentheses
+Solved
+1323
+Easy
+Topics
+Companies
+Hint
+Bloomberg
+Facebook
+Given a valid parentheses string s, return the nesting depth of s. The nesting depth is the maximum number of nested parentheses.
+
+ 
+
+Example 1:
+
+Input: s = "(1+(2*3)+((8)/4))+1"
+
+Output: 3
+
+Explanation:
+
+Digit 8 is inside of 3 nested parentheses in the string.
+
+Example 2:
+
+Input: s = "(1)+((2))+(((3)))"
+
+Output: 3
+
+Explanation:
+
+Digit 3 is inside of 3 nested parentheses in the string.
+
+Example 3:
+
+Input: s = "()(())((()()))"
+
+Output: 3
+
+ 
+
+Constraints:
+
+1 <= s.length <= 100
+s consists of digits 0-9 and characters '+', '-', '*', '/', '(', and ')'.
+It is guaranteed that parentheses expression s is a VPS.
+
+
+// brute force
+// t:O(n) sp:O(n)
+class Solution {
+    public:
+        int maxDepth(string s) {
+            stack<char> st;
+            int res=0;
+            for(int i=0;i<s.size();i++){
+                if(s[i]=='('){
+                    st.push('(');
+                    int size=st.size();
+                    res=max(res,size);
+                }
+                else if(s[i]==')' && !st.empty()){
+                    st.pop();
+                }
+            }
+            return res;
+        }
+};
+
+
+// optimal solution
+// t:O(n) sp:O(1)
+class Solution {
+    public:
+        int maxDepth(string s) {
+            int depth=0;
+            int res=0;
+            for(int i=0;i<s.size();i++){
+                if(s[i]=='('){
+                    depth++;
+                    res=max(res,depth);
+                }
+                else if(s[i]==')'){
+                    depth--;
+                }
+            }
+            return res;
+        }
+};
