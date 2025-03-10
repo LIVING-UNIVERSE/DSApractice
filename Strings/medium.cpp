@@ -468,3 +468,54 @@ class Solution {
             return sign*val;
         }
 };
+
+
+
+//Substrings with K Distinct
+Difficulty: MediumAccuracy: 20.46%Submissions: 146K+Points: 4Average Time: 20m
+Given a string s of lowercase alphabets, count all possible substrings (not necessarily distinct) that have exactly k distinct characters. 
+
+Examples :
+
+Input: s = "aba", k = 2
+Output: 3
+Explanation: The substrings are: "ab", "ba" and "aba".
+Input: s = "abaaca", k = 1
+Output: 7
+Explanation: The substrings are: "a", "b", "a", "aa", "a", "c", "a".
+Input: s = "cdad", k = 4
+Output: 0
+Constraints:
+1 ≤ s.size() ≤ 106
+1 ≤ k ≤ 26
+
+
+// optimal solution
+// t:O(n)+O(n) sp:O(1)
+// always remember that the number of substrings of a string of length n is n*(n+1)/2
+// always remember for calculating number of substrings with given condition always use f(k)-f(k-1) algorithm ; always works
+class Solution {
+    private:
+      int f(string &s,int k){
+          int l=0,r=0,count=0;
+          int n=s.size();
+          unordered_map<char,int> m;
+          while(r<n){
+              m[s[r]]++;
+              while(m.size()>k){
+                  m[s[l]]--;
+                  if(m[s[l]]==0){
+                      m.erase(s[l]);
+                  }
+                  l++;
+              }
+              count+=(r-l+1);
+              r++;
+          }
+          return count;
+      }
+    public:
+      int countSubstr(string& s, int k) {
+          return f(s,k)-f(s,k-1);
+      }
+};
