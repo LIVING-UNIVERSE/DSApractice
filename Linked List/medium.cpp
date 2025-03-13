@@ -877,3 +877,127 @@ class Solution {
             return mergeSort(head);
         }
  };
+
+
+
+
+//Sort a linked list of 0s, 1s and 2s
+Difficulty: MediumAccuracy: 60.75%Submissions: 230K+Points: 4Average Time: 30m
+Given a linked list where nodes can contain values 0s, 1s, and 2s only. The task is to segregate 0s, 1s, and 2s linked list such that all zeros segregate to the head side, 2s at the end of the linked list, and 1s in the middle of 0s and 2s.
+
+Examples:
+
+Input: LinkedList: 1->2->2->1->2->0->2->2
+Output: 0->1->1->2->2->2->2->2
+Explanation: All the 0s are segregated to the left end of the linked list, 2s to the right end of the list, and 1s in between.
+ 
+Input: LinkedList: 2->2->0->1
+Output: 0->1->2->2
+Explanation: After arranging all the 0s,1s and 2s in the given format, the output will be 0 1 2 2.
+
+Expected Time Complexity: O(n).
+Expected Auxiliary Space: O(n).
+
+Constraints:
+1 <= no. of nodes <= 106
+0 <= node->data <= 2
+
+
+
+// brute force
+// t:O(n) s:O(n)
+/*
+
+  Node is defined as
+  struct Node {
+    int data;
+    struct Node *next;
+    Node(int x) {
+        data = x;
+        next = NULL;
+    }
+};
+
+*/
+class Solution {
+    public:
+      // Function to sort a linked list of 0s, 1s and 2s.
+      Node* segregate(Node* head) {
+          int zCount=0;
+          int oCount=0;
+          int tCount=0;
+          Node* curr=head;
+          while(curr!=NULL){
+              if(curr->data==0) zCount++;
+              else if(curr->data ==1) oCount++;
+              else{
+                  tCount++;
+              }
+              curr=curr->next;
+          }
+          curr=head;
+          while(curr!=NULL){
+              if(zCount){
+                  curr->data=0;zCount--;
+              }
+              else if(oCount){
+                  curr->data=1;oCount--;
+              }
+              else{
+                  curr->data=2;
+              }
+              curr=curr->next;
+          }
+          return head;
+      }
+  };
+
+  
+
+// optimal solution
+// t:O(n) s:O(1)
+class Solution {
+    public:
+      // Function to sort a linked list of 0s, 1s and 2s.
+      Node* segregate(Node* head) {
+          if(head==NULL || head->next==NULL) return head;
+          Node* zero= new Node(-1);
+          Node* one =new Node(-1);
+          Node* two= new Node(-1);
+          Node* z=zero;
+          Node* o=one;
+          Node* t=two;
+          Node* curr=head;
+          while(curr!=NULL){
+              Node* temp=curr->next;
+              if(curr->data==0){
+                  z->next=curr;
+                  z=z->next;
+              }
+              else if(curr->data==1){
+                  o->next=curr;
+                  o=o->next;
+              }
+              else{
+                  t->next=curr;
+                  t=t->next;
+              }
+              curr->next=NULL;
+              curr=temp;
+          }
+          if(one->next!=NULL){
+              z->next=one->next;
+              if(two->next!=NULL){
+                  o->next=two->next;
+              }
+          }
+          else if(two->next!=NULL){
+              z->next=two->next;
+          }
+          Node* nHead=zero->next;
+          delete(zero);
+          delete(one);
+          delete(two);
+          return nHead;
+      }
+};
