@@ -747,3 +747,133 @@ class Solution {
             return true;
         }
 };
+
+
+
+
+//148. Sort List
+Solved
+Medium
+Topics
+Companies
+Facebook
+Microsoft
+Amazon
+ByteDance
+Apple
+Given the head of a linked list, return the list after sorting it in ascending order.
+
+ 
+
+Example 1:
+
+
+Input: head = [4,2,1,3]
+Output: [1,2,3,4]
+Example 2:
+
+
+Input: head = [-1,5,3,4,0]
+Output: [-1,0,3,4,5]
+Example 3:
+
+Input: head = []
+Output: []
+ 
+
+Constraints:
+
+The number of nodes in the list is in the range [0, 5 * 104].
+-105 <= Node.val <= 105
+ 
+
+Follow up: Can you sort the linked list in O(n logn) time and O(1) memory (i.e. constant space)?
+
+
+
+// brute force
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode() : val(0), next(nullptr) {}
+ *     ListNode(int x) : val(x), next(nullptr) {}
+ *     ListNode(int x, ListNode *next) : val(x), next(next) {}
+ * };
+ */
+class Solution {
+public:
+    ListNode* sortList(ListNode* head) {
+        vector<int> arr;
+        ListNode* curr=head;
+        while(curr!=NULL){
+            arr.push_back(curr->val);
+            curr=curr->next;
+        }
+        sort(arr.begin(),arr.end());
+        curr=head;
+        for(int i=0; i<arr.size();i++){
+            curr->val=arr[i];
+            curr=curr->next;
+        }
+        return head;
+    }
+};
+
+
+
+// optimal solution
+// t:O(nlogn) s:O(1)
+class Solution {
+    private:
+        ListNode* findMid(ListNode* head){
+            ListNode* slow=head;
+            ListNode* fast=head;
+            ListNode* prev=NULL;
+            while(fast!=NULL && fast->next!=NULL){
+                prev=slow;
+                slow=slow->next;
+                fast=fast->next->next;
+            }
+            prev->next=NULL;
+            return slow;
+        }
+        ListNode* merge(ListNode* head,ListNode* mid){
+            ListNode* prev= new ListNode(0);
+            ListNode* curr=prev;
+            while(head!=NULL && mid!=NULL){
+                if(head->val<mid->val){
+                    curr->next=head;
+                    curr=curr->next;
+                    head=head->next;
+                }
+                else{
+                    curr->next=mid;
+                    curr=curr->next;
+                    mid=mid->next;
+                }
+            }
+            if(head==NULL){
+                curr->next=mid;
+            }
+            else{
+                curr->next=head;
+            }
+            ListNode* temp=prev->next;
+            delete(prev);
+            return temp;
+        }
+        ListNode* mergeSort(ListNode* head){
+            if(head==NULL || head->next==NULL) return head;
+            ListNode* mid=findMid(head);
+            ListNode* temp1=mergeSort(head);
+            ListNode* temp2=mergeSort(mid);
+            return merge(temp1,temp2);
+        }    
+    public:
+        ListNode* sortList(ListNode* head) {
+            if(head==NULL|| head->next==NULL) return head;
+            return mergeSort(head);
+        }
+ };
