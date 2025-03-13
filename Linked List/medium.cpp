@@ -1186,3 +1186,119 @@ class Solution {
             return currA;
         }
 };
+
+
+
+
+//Add 1 to a Linked List Number
+Difficulty: MediumAccuracy: 31.91%Submissions: 299K+Points: 4Average Time: 20m
+You are given a linked list where each element in the list is a node and have an integer data. You need to add 1 to the number formed by concatinating all the list node numbers together and return the head of the modified linked list. 
+
+Note: The head represents the first element of the given array.
+
+Examples :
+
+Input: LinkedList: 4->5->6
+Output: 457
+
+Explanation: 4->5->6 represents 456 and when 1 is added it becomes 457. 
+Input: LinkedList: 1->2->3
+Output: 124
+ 
+Explanation:  1->2->3 represents 123 and when 1 is added it becomes 124. 
+Expected Time Complexity: O(n)
+Expected Auxiliary Space: O(1)
+
+Constraints:
+1 <= len(list) <= 105
+0 <= list[i] <= 9
+
+
+
+// brute force
+// t:O(3n) s:O(1)
+
+// User function template for C++
+
+/*
+
+struct Node
+{
+    int data;
+    struct Node* next;
+
+    Node(int x){
+        data = x;
+        next = NULL;
+    }
+};
+
+*/
+
+class Solution {
+    private:
+      Node* reverse(Node* head){
+          Node* prev=NULL;
+          Node* curr=head;
+          while(curr!=NULL){
+              Node* temp=curr->next;
+              curr->next=prev;
+              prev=curr;
+              curr=temp;
+          }
+          return prev;
+      }
+    public:
+      Node* addOne(Node* head) {
+          bool carry=true;
+          Node* nHead=reverse(head);
+          Node* curr=nHead;
+          Node* prev=NULL;
+          while(curr!=NULL){
+              prev=curr;
+              if(carry){
+                  if(curr->data+1>=10){
+                      curr->data=0;
+                  }
+                  else{
+                      curr->data=curr->data+1;
+                      carry=false;
+                  }
+              }
+              curr=curr->next;
+          }
+          if(carry){
+              Node* msb= new Node(1);
+              prev->next=msb;
+              prev=prev->next;
+          }
+          return reverse(nHead);
+      }
+};
+
+
+// optimal solution
+// t:O(n) s:O(1)
+// using backtracking
+class Solution {
+    private:
+      int f(Node* head){
+          if(head==NULL) return 1;
+          int carry=f(head->next);
+          if(head->data+carry>=10){
+              head->data=0;return 1;
+          }
+          head->data=head->data+carry;
+          return 0;
+      }
+    public:
+      Node* addOne(Node* head) {
+          int carry=f(head);
+          if(carry){
+              Node* nHead= new Node(1);
+              nHead->next=head;
+              return nHead;
+          }
+          return head;
+      }
+};
