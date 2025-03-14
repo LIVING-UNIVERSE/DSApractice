@@ -353,3 +353,62 @@ class Solution {
 
 
 
+//Delete in a Doubly Linked List
+Difficulty: EasyAccuracy: 42.98%Submissions: 184K+Points: 2Average Time: 40m
+Given a Doubly Linked list and a position. The task is to delete a node from a given position (position starts from 1) in a doubly linked list and return the head of the doubly Linked list.
+
+Examples:
+
+Input: LinkedList = 1 <--> 3 <--> 4, x = 3
+Output: 1 <--> 3
+Explanation: After deleting the node at position 3 (position starts from 1),the linked list will be now as 1 <--> 3.
+ 
+Input: LinkedList = 1 <--> 5 <--> 2 <--> 9, x = 1
+Output: 5 <--> 2 <--> 9
+Explanation:
+
+Constraints:
+2 <= size of the linked list <= 106
+1 <= x <= size of the linked list 
+1 <= node->data <= 104
+
+// solution
+/* Structure of Node
+class Node {
+  public:
+    int data;
+    Node *next;
+    Node *prev;
+
+    Node(int val) {
+        data = val;
+        this->next = NULL;
+        this->prev = NULL;
+    }
+};
+*/
+
+class Solution {
+    public:
+      // Function to delete a node at given position.
+      Node* deleteNode(Node* head, int x) {
+          if(x==1){
+              Node* temp=head->next;
+              temp->prev=NULL;
+              return temp;
+          }
+          Node* curr=head;
+          while(x>1){
+              curr=curr->next;
+              x--;
+          }
+          Node* pre=curr->prev;
+          Node* post=curr->next;
+          pre->next=post;
+          if(post){
+              post->prev=pre;
+          }
+          delete(curr);
+          return head;
+      }
+};
