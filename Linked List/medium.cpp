@@ -1382,3 +1382,59 @@ class Solution {
             return newHead->next;
         }
 };
+
+
+
+//Merge two sorted linked lists
+Difficulty: MediumAccuracy: 62.91%Submissions: 183K+Points: 4Average Time: 30m
+Given the head of two sorted linked lists consisting of nodes respectively. The task is to merge both lists and return the head of the sorted merged list.
+
+Examples:
+
+Input: head1 = 5 -> 10 -> 15 -> 40, head2 = 2 -> 3 -> 20
+Output: 2 -> 3 -> 5 -> 10 -> 15 -> 20 -> 40
+Explanation:
+
+Input: head1 = 1 -> 1, head2 = 2 -> 4
+Output: 1 -> 1 -> 2 -> 4
+Explanation:
+
+Constraints:
+1 <= no. of nodes<= 103
+0 <= node->data <= 105
+
+
+// solution
+/* Link list Node
+struct Node {
+  int data;
+  struct Node *next;
+
+  Node(int x) {
+    data = x;
+    next = NULL;
+  }
+};
+*/
+class Solution {
+    public:
+      Node* sortedMerge(Node* head1, Node* head2) {
+          Node* dummy= new Node(-1);
+          Node* temp=dummy;
+          Node* curr1= head1;
+          Node* curr2= head2;
+          while(curr1!=NULL && curr2!=NULL){
+              if(curr1->data < curr2->data){
+                  temp->next=curr1;
+                  curr1=curr1->next;
+              }
+              else{
+                  temp->next=curr2;
+                  curr2=curr2->next;
+              }
+              temp=temp->next;
+          }
+          temp->next=(curr1)?curr1:curr2;
+          return dummy->next;
+      }
+};
