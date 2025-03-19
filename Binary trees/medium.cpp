@@ -263,4 +263,107 @@ class Solution {
             f(root,ans);
             return ans;
         }
-    };
+};
+
+
+
+
+//100. Same Tree
+Solved
+Easy
+Topics
+Companies
+LinkedIn
+Amazon
+Google
+Apple
+Facebook
+Given the roots of two binary trees p and q, write a function to check if they are the same or not.
+
+Two binary trees are considered the same if they are structurally identical, and the nodes have the same value.
+
+ 
+
+Example 1:
+
+
+Input: p = [1,2,3], q = [1,2,3]
+Output: true
+Example 2:
+
+
+Input: p = [1,2], q = [1,null,2]
+Output: false
+Example 3:
+
+
+Input: p = [1,2,1], q = [1,1,2]
+Output: false
+ 
+
+Constraints:
+
+The number of nodes in both trees is in the range [0, 100].
+-104 <= Node.val <= 104
+
+
+// brute force solution
+// t:O(n) s:O(2n)
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+    private:
+        void preorder(TreeNode* root,vector<int> &arr){
+            if(root==NULL){
+                arr.push_back(-1e8) ; return ;
+            }
+            arr.push_back(root->val);
+            preorder(root->left,arr);
+            preorder(root->right,arr);
+        }
+    public:
+        bool isSameTree(TreeNode* p, TreeNode* q) {
+            vector<int> pa,qa;
+            preorder(p,pa);
+            preorder(q,qa);
+            return (pa==qa);
+        }
+};
+
+
+
+// optimal solution
+// t:O(n) s:O(h)  <- recursion call stack
+class Solution {
+    public:
+        bool isSameTree(TreeNode* p, TreeNode* q) {
+            if(p==NULL || q==NULL){
+                return (p==NULL && q==NULL);
+            }
+            if(p->val!=q->val) return false;
+            if( isSameTree(p->left,q->left)==false) return false;
+            if( isSameTree(p->right,q->right)==false) return  false;
+            return true;
+        }
+};   
+
+
+// better way of writing the above code
+class Solution {
+    public:
+        bool isSameTree(TreeNode* p, TreeNode* q) {
+            if(p==NULL || q==NULL) return (p==NULL && q==NULL);
+            return (p->val==q->val && isSameTree(p->left,q->left) && isSameTree(p->right,q->right));
+        }
+};
+
+
