@@ -119,3 +119,73 @@ public:
         return (val==-1)?false:true;
     }
 };
+
+
+
+
+//543. Diameter of Binary Tree
+Solved
+Easy
+Topics
+Companies
+Facebook
+Amazon
+Bloomberg
+Google
+Microsoft
+Given the root of a binary tree, return the length of the diameter of the tree.
+
+The diameter of a binary tree is the length of the longest path between any two nodes in a tree. This path may or may not pass through the root.
+
+The length of a path between two nodes is represented by the number of edges between them.
+
+ 
+
+Example 1:
+
+
+Input: root = [1,2,3,4,5]
+Output: 3
+Explanation: 3 is the length of the path [4,2,1,3] or [5,2,1,3].
+Example 2:
+
+Input: root = [1,2]
+Output: 1
+ 
+
+Constraints:
+
+The number of nodes in the tree is in the range [1, 104].
+-100 <= Node.val <= 100
+
+
+
+// solution
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+    private:
+    // if I use pass by value a copy of 'ans' will be created thus i have to use pass by refrence to update the value of 'ans';
+         int f(TreeNode* root,int &ans){
+            if(root==NULL) return 0;
+            int lh= f(root->left,ans);
+            int rh=f(root->right,ans);
+            ans=max(ans,lh+rh);
+            return max(lh,rh)+1;
+         }
+    public:
+        int diameterOfBinaryTree(TreeNode* root) {
+            int ans=0;
+            f(root,ans);
+            return ans;
+        }
+};
