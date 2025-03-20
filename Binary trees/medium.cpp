@@ -738,3 +738,74 @@ class Solution {
           return ans;
       }
 };
+
+
+
+
+//Bottom View of Binary Tree
+Difficulty: MediumAccuracy: 54.18%Submissions: 293K+Points: 4Average Time: 45m
+Given a binary tree, return an array where elements represent the bottom view of the binary tree from left to right.
+
+Note: If there are multiple bottom-most nodes for a horizontal distance from the root, then the latter one in the level traversal is considered. For example, in the below diagram, 3 and 4 are both the bottommost nodes at a horizontal distance of 0, here 4 will be considered.
+
+                      20
+                    /    \
+                  8       22
+                /   \     /   \
+              5      3 4     25
+                     /    \      
+                 10       14
+
+For the above tree, the output should be 5 10 4 14 25.
+
+Examples :
+
+Input:
+       1
+     /   \
+    3     2
+Output: 3 1 2
+Explanation: First case represents a tree with 3 nodes and 2 edges where root is 1, left child of 1 is 3 and right child of 1 is 2.
+
+Thus bottom view of the binary tree will be 3 1 2.
+Input:
+         10
+       /    \
+      20    30
+     /  \
+    40   60
+Output: 40 20 60 30
+Input:
+        1
+       /   
+      2
+Output: 2 1
+Constraints:
+1 <= number of nodes <= 105
+1 <= node->data <= 105
+
+
+// optimal solution
+// t:O(nlogn) sp:O(n)+O(n)
+class Solution {
+    public:
+      vector <int> bottomView(Node *root) {
+          vector<int> ans;
+          map<int,int> m;
+          queue<pair<int,Node*>> q;
+          q.push({0,root});
+          while(!q.empty()){
+              auto p=q.front();
+              q.pop();
+              int col=p.first;
+              Node* temp=p.second;
+              m[col]=temp->data;
+              if(temp->left) q.push({col-1,temp->left});
+              if(temp->right) q.push({col+1,temp->right});
+          }
+          for(auto it=m.begin();it!=m.end();it++){
+              ans.push_back(it->second);
+          }
+          return ans;
+      }
+  };
