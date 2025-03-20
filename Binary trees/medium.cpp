@@ -444,3 +444,218 @@ public:
         return ans;
     }
 };
+
+
+
+
+//Tree Boundary Traversal
+Difficulty: MediumAccuracy: 23.33%Submissions: 447K+Points: 4Average Time: 35m
+Given a Binary Tree, find its Boundary Traversal. The traversal should be in the following order: 
+
+Left Boundary: This includes all the nodes on the path from the root to the leftmost leaf node. You must prefer the left child over the right child when traversing. Do not include leaf nodes in this section.
+
+Leaf Nodes: All leaf nodes, in left-to-right order, that are not part of the left or right boundary.
+
+Reverse Right Boundary: This includes all the nodes on the path from the rightmost leaf node to the root, traversed in reverse order. You must prefer the right child over the left child when traversing. Do not include the root in this section if it was already included in the left boundary.
+
+Note: If the root doesnt have a left subtree or right subtree, then the root itself is the left or right boundary. 
+
+Examples:
+
+Input: root[] = [1, 2, 3, 4, 5, 6, 7, N, N, 8, 9, N, N, N, N]
+Output: [1, 2, 4, 8, 9, 6, 7, 3]
+Explanation:
+
+Input: root[] = [1, 2, N, 4, 9, 6, 5, N, 3, N, N, N, N 7, 8]
+Output: [1, 2, 4, 6, 5, 7, 8]
+Explanation:
+
+As the root doesnt have a right subtree, the right boundary is not included in the traversal.
+Input: root[] = [1, N, 2, N, 3, N, 4, N, N] 
+    1
+     \
+      2
+       \
+        3
+         \
+          4
+
+Output: [1, 4, 3, 2]
+Explanation:
+Left boundary: [1] (as there is no left subtree)
+Leaf nodes: [4]
+Right boundary: [3, 2] (in reverse order)
+Final traversal: [1, 4, 3, 2]
+Constraints:
+1 ≤ number of nodes ≤ 105
+1 ≤ node->data ≤ 105
+
+
+
+// solution
+/*
+// Tree Node
+class Node {
+  public:
+    int data;
+    Node* left;
+    Node* right;
+
+    // Constructor to initialize a new node
+    Node(int val) {
+        data = val;
+        left = NULL;
+        right = NULL;
+    }
+};
+*/
+
+class Solution {
+    private:
+      void f(Node* root,vector<int> &v){
+          if(root->left==NULL && root->right==NULL) return ;
+          if(root->right){
+              f(root->right,v);
+          }
+          else{
+              f(root->left,v);
+          }
+          v.push_back(root->data);
+      }
+      void preorder(Node* root,vector<int> &v){
+          if(root->left==NULL && root->right==NULL){
+              v.push_back(root->data);
+              return ;
+          }
+          if(root->left) preorder(root->left,v);
+          if(root->right) preorder(root->right,v);
+      }
+    public:
+      vector<int> boundaryTraversal(Node *root) {
+          vector<int> v;
+          if(!root) return v;
+          Node* curr=root;
+          v.push_back(curr->data);
+          if(curr->left){
+              curr=curr->left;
+              while(curr->left!=NULL || curr->right!=NULL){
+                  v.push_back(curr->data);
+                  if(curr->left){
+                      curr=curr->left;
+                  }
+                  else{
+                      curr=curr->right;
+                  }
+              }
+          }
+          if(root->left) preorder(root->left,v);
+          if(root->right) preorder(root->right,v);
+          if(root->right){
+              f(root->right,v);
+          }
+          return v;
+      }
+  };
+
+
+
+
+
+//987. Vertical Order Traversal of a Binary Tree
+Solved
+Hard
+Topics
+Companies
+Given the root of a binary tree, calculate the vertical order traversal of the binary tree.
+
+For each node at position (row, col), its left and right children will be at positions (row + 1, col - 1) and (row + 1, col + 1) respectively. The root of the tree is at (0, 0).
+
+The vertical order traversal of a binary tree is a list of top-to-bottom orderings for each column index starting from the leftmost column and ending on the rightmost column. There may be multiple nodes in the same row and same column. In such a case, sort these nodes by their values.
+
+Return the vertical order traversal of the binary tree.
+
+ 
+
+Example 1:
+
+
+Input: root = [3,9,20,null,null,15,7]
+Output: [[9],[3,15],[20],[7]]
+Explanation:
+Column -1: Only node 9 is in this column.
+Column 0: Nodes 3 and 15 are in this column in that order from top to bottom.
+Column 1: Only node 20 is in this column.
+Column 2: Only node 7 is in this column.
+Example 2:
+
+
+Input: root = [1,2,3,4,5,6,7]
+Output: [[4],[2],[1,5,6],[3],[7]]
+Explanation:
+Column -2: Only node 4 is in this column.
+Column -1: Only node 2 is in this column.
+Column 0: Nodes 1, 5, and 6 are in this column.
+          1 is at the top, so it comes first.
+          5 and 6 are at the same position (2, 0), so we order them by their value, 5 before 6.
+Column 1: Only node 3 is in this column.
+Column 2: Only node 7 is in this column.
+Example 3:
+
+
+Input: root = [1,2,3,4,6,5,7]
+Output: [[4],[2],[1,5,6],[3],[7]]
+Explanation:
+This case is the exact same as example 2, but with nodes 5 and 6 swapped.
+Note that the solution remains the same since 5 and 6 are in the same location and should be ordered by their values.
+ 
+
+Constraints:
+
+The number of nodes in the tree is in the range [1, 1000].
+0 <= Node.val <= 1000
+
+
+
+// optimal solution
+// time complexity for code below is O(nlogn) and space complexity is O(n)
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+    public:
+        vector<vector<int>> verticalTraversal(TreeNode* root) {
+            vector<vector<int>> ans;
+            queue<pair<TreeNode*,pair<int,int>>> q;
+            map<int,map<int,multiset<int>>> m;
+            q.push({root,{0,0}});
+            while(!q.empty()){
+                auto p=q.front();
+                q.pop();
+                TreeNode* temp=p.first;
+                int col=p.second.first;
+                int row=p.second.second;
+                m[col][row].insert(temp->val);
+                if(temp->left) q.push({temp->left,{col-1,row+1}});
+                if(temp->right) q.push({temp->right,{col+1,row+1}});
+            }
+            int val=-1;
+            for(auto it=m.begin();it!=m.end();it++){
+                vector<int> v;
+                for(auto t=it->second.begin();t!=it->second.end();t++){
+                    for(auto x: t->second){
+                        v.push_back(x);
+                    }
+                }
+                ans.push_back(v);
+            }
+            return ans;
+        }
+};
