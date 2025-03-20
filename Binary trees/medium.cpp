@@ -965,3 +965,81 @@ class Solution {
             return f(root->left,root->right);
         }
 };
+
+
+
+
+//Root to Leaf Paths
+Difficulty: MediumAccuracy: 43.65%Submissions: 134K+Points: 4Average Time: 30m
+Given a Binary Tree, you need to find all the possible paths from the root node to all the leaf nodes of the binary tree.
+
+Note: The paths should be returned such that paths from the left subtree of any node are listed first, followed by paths from the right subtree.
+
+Examples:
+
+Input: root[] = [1, 2, 3, 4, 5]
+ex-3
+Output: [[1, 2, 4], [1, 2, 5], [1, 3]] 
+Explanation: All possible paths: 1->2->4, 1->2->5 and 1->3
+Input: root[] = [1, 2, 3]
+       1
+    /     \
+   2       3
+Output: [[1, 2], [1, 3]] 
+Explanation: All possible paths: 1->2 and 1->3
+Input: root[] = [10, 20, 30, 40, 60]
+         10
+       /    \
+      20    30
+     /  \
+    40   60
+Output: [[10, 20, 40], [10, 20, 60], [10, 30]]
+Explanation: All possible paths: 10->20 ->40, 10->20->60 and 10->30
+Constraints:
+1<=number of nodes<=104
+1<=node->data<=104
+
+
+
+// optimal solution
+// t:O(n) sp:O(h)
+/*
+
+Definition for Binary Tree Node
+struct Node
+{
+    int data;
+    struct Node* left;
+    struct Node* right;
+
+    Node(int x){
+        data = x;
+        left = right = NULL;
+    }
+};
+*/
+
+class Solution {
+    private:
+      void f(Node* root,vector<int> &v,vector<vector<int>> &ans){
+          if(root->left==NULL && root->right==NULL){
+              v.push_back(root->data);
+              ans.push_back(v);
+              v.pop_back();
+              return ;
+          }
+          v.push_back(root->data);
+          if(root->left) f(root->left,v,ans);
+          if(root->right) f(root->right,v,ans);
+          v.pop_back();
+      }
+    public:
+      vector<vector<int>> Paths(Node* root) {
+          vector<vector<int>> ans;
+          if(!root) return ans;
+          vector<int> v;
+          f(root,v,ans);
+          return ans;
+      }
+  };
+  
