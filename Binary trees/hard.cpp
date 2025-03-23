@@ -174,3 +174,97 @@ class Solution {
            return NULL;
         }
 };
+
+
+
+//Children Sum in a Binary Tree
+Difficulty: MediumAccuracy: 51.58%Submissions: 188K+Points: 4Average Time: 20m
+Given a binary tree having n nodes. Check whether all of its nodes have a value equal to the sum of their child nodes. Return 1 if all the nodes in the tree satisfy the given properties, else it returns 0. For every node, the data value must be equal to the sum of the data values in the left and right children. Consider the data value 0 for a NULL child. Also, leaves are considered to follow the property.
+
+Examples:
+
+Input:
+Binary tree
+       35
+      /  \
+     20   15
+    / \   / \
+   15  5 10  5
+
+Output: 1
+Explanation: 
+Here, every node is sum of its left and right child.
+Input:
+Binary tree
+       1
+     /   \
+    4     3
+   /  
+  5    
+Output: 0
+Explanation: 
+Here, 1 is the root node and 4, 3 are its child nodes. 4 + 3 = 7 which is not equal to the value of root node. Hence, this tree does not satisfy the given condition.
+Input:
+Binary tree
+       10
+      /  \
+     4    6
+    / \  / \
+   1   3 2  4
+
+Output: 1
+Explanation: 
+Here, every node is a sum of its left and right child.
+Constraints:
+1 <= number of nodes <= 105
+0 <= node->data <= 105
+
+
+
+// optimal solution
+// t:O(n) sp:O(h)
+class Solution{
+    public:
+    //Function to check whether all nodes of a tree have the value 
+    //equal to the sum of their child nodes.
+    int isSumProperty(Node *root){
+        if(root==NULL) return 1;
+        if(root->left==NULL && root->right==NULL) return 1;
+        int l=isSumProperty(root->left);
+        int r=isSumProperty(root->right);
+        if(l==0 || r==0) return 0;
+        int lval=(root->left)?root->left->data:0;
+        int rval=(root->right)?root->right->data:0;
+        return (lval+rval==root->data);
+    }
+};
+
+
+
+// if we have to make a binary tree to follow child sum property and we can only increse node value then
+// optimal solution
+class Solution {
+    public:
+        void f(Node* root) {
+            if (root == NULL) return;
+            if (root->left == NULL && root->right == NULL) return;
+    
+            int lval = (root->left) ? root->left->data : 0;
+            int rval = (root->right) ? root->right->data : 0;
+    
+            if (lval + rval < root->data) {
+                if (root->left) root->left->data = root->data;
+                if (root->right) root->right->data = root->data;
+            }
+    
+            f(root->left);
+            f(root->right);
+    
+            // Ensure parent node holds the sum of its children
+            int sum = 0;
+            if (root->left) sum += root->left->data;
+            if (root->right) sum += root->right->data;
+            root->data = sum;
+        }
+    };
+    
