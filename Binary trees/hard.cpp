@@ -461,3 +461,107 @@ class Solution {
             return ans;
         }
 };
+
+
+
+
+//Burning Tree
+Difficulty: HardAccuracy: 53.53%Submissions: 105K+Points: 8
+Given a binary tree and a node data called target. Find the minimum time required to burn the complete binary tree if the target is set on fire. It is known that in 1 second all nodes connected to a given node get burned. That is its left child, right child, and parent.
+Note: The tree contains unique values.
+
+Examples : 
+
+Input: root[] = [1,2,3,4,5,N,6,N,N,7,8,N,9,N,N,N,N,N,10],  target = 8
+  
+Output: 7
+Explanation: If leaf with the value 8 is set on fire. 
+After 1 sec: 5 catches fire.
+After 2 sec: 2, 7 catches fire.
+After 3 sec: 4, 1 catches fire.
+After 4 sec: 3 catches fire.
+After 5 sec: 6 catches fire.
+After 6 sec: 9 catches fire.
+After 7 sec: 10 catches fire.
+It takes 7s to burn the complete tree.
+Input: root[] = [1, 2, 3, 4, 5, N, 7, 8, N, 10], target = 10
+
+Output: 5
+Explanation: If leaf with the value 10 is set on fire. 
+- After 1 sec: Node 5 catches fire.
+- After 2 sec: Node 2 catches fire.
+- After 3 sec: Nodes 1 and 4 catches fire.
+- After 4 sec: Node 3 and 8 catches fire.
+- After 5 sec: Node 7 catches fire.
+It takes 5s to burn the complete tree.
+Constraints:
+1 ≤ number of nodes ≤ 105
+1 ≤ node->data ≤ 105
+
+
+
+// optimal solution
+class Solution {
+    private:
+      void f(Node* root, unordered_map<Node*,Node*> &m){
+          queue<Node*> q;
+          m[root]=NULL;
+          q.push(root);
+          while(!q.empty()){
+              Node* temp=q.front();
+              q.pop();
+              if(temp->left){
+                  m[temp->left]=temp;
+                  q.push(temp->left);
+              }
+              if(temp->right){
+                  m[temp->right]=temp;
+                  q.push(temp->right);
+              }
+          }
+      }
+      Node* find(Node* root,int target){
+          queue<Node*> q;
+          q.push(root);
+          while(!q.empty()){
+              auto temp=q.front();
+              q.pop();
+              if(temp->data==target) return temp;
+              if(temp->left) q.push(temp->left);
+              if(temp->right) q.push(temp->right);
+          }
+          return NULL;
+      }
+    public:
+      int minTime(Node* root, int target) {
+          int res=0;
+          if(!root) return res;
+          unordered_set<Node*> s;
+          unordered_map<Node*,Node*> m;
+          f(root,m);
+          queue<pair<Node*,int>> q;
+          Node* tag=find(root,target);
+          s.insert(tag);
+          q.push({tag,0});
+          while(!q.empty()){
+              Node* temp=q.front().first;
+              int count=q.front().second;
+              q.pop();
+              res=max(res,count);
+              if(temp->left && s.find(temp->left)==s.end()){
+                  q.push({temp->left,count+1});
+                  s.insert(temp->left);
+              }
+              if(temp->right && s.find(temp->right)==s.end()){
+                  q.push({temp->right,count+1});
+                  s.insert(temp->right);
+              }
+              Node* parent= m[temp];
+              if(parent && s.find(parent)==s.end()){
+                  q.push({parent,count+1});
+                  s.insert(parent);
+              }
+          }
+          return res;
+      }
+  };
