@@ -564,4 +564,108 @@ class Solution {
           }
           return res;
       }
-  };
+};
+
+
+
+
+//222. Count Complete Tree Nodes
+Solved
+Easy
+Topics
+Companies
+Google
+Amazon
+tiktok
+Given the root of a complete binary tree, return the number of the nodes in the tree.
+
+According to Wikipedia, every level, except possibly the last, is completely filled in a complete binary tree, and all nodes in the last level are as far left as possible. It can have between 1 and 2h nodes inclusive at the last level h.
+
+Design an algorithm that runs in less than O(n) time complexity.
+
+ 
+
+Example 1:
+
+
+Input: root = [1,2,3,4,5,6]
+Output: 6
+Example 2:
+
+Input: root = []
+Output: 0
+Example 3:
+
+Input: root = [1]
+Output: 1
+ 
+
+Constraints:
+
+The number of nodes in the tree is in the range [0, 5 * 104].
+0 <= Node.val <= 5 * 104
+The tree is guaranteed to be complete.
+
+
+// brute force
+// t:O(n) sp:O(h)
+class Solution {
+    public:
+        int countNodes(TreeNode* root) {
+            if(root==NULL) return 0;
+            return countNodes(root->left)+countNodes(root->right)+1;
+        }
+};
+
+
+// better solution
+// t:O(logn*logn) sp:O(h)
+class Solution {
+    private:
+        int height(TreeNode* root){
+            int h=0;
+            while(root){
+                h++;
+                root=root->left;
+            }
+            return h;
+        }
+    public:
+        int countNodes(TreeNode* root) {
+            if(root==NULL) return 0;
+            int lh=height(root->left);
+            int rh=height(root->right);
+            if(lh==rh) return (1<<lh)+countNodes(root->right);
+            return (1<<rh)+countNodes(root->left);
+        }
+};
+
+
+// optimal solution
+// t:O(logn) sp:O(h)
+class Solution {
+    private:
+        int lheight(TreeNode* root){
+            int count=0;
+            while(root){
+                count++;
+                root=root->left;
+            }
+            return count;
+        }
+        int rheight(TreeNode* root){
+            int count=0;
+            while(root){
+                count++;
+                root=root->right;
+            }
+            return count;
+        }
+    public:
+        int countNodes(TreeNode* root) {
+            int lh=lheight(root);
+            int rh=rheight(root);
+            if(lh==rh) return (1<<lh)-1;
+            return 1+countNodes(root->left)+countNodes(root->right);
+        }
+    };
