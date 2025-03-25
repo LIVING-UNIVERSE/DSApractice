@@ -734,3 +734,63 @@ class Solution {
             return f(0,n-1,0,n-1,preorder,inorder,m);
         }
 };
+
+
+
+//106. Construct Binary Tree from Inorder and Postorder Traversal
+Solved
+Medium
+Topics
+Companies
+Shopee
+Given two integer arrays inorder and postorder where inorder is the inorder traversal of a binary tree and postorder is the postorder traversal of the same tree, construct and return the binary tree.
+
+ 
+
+Example 1:
+
+
+Input: inorder = [9,3,15,20,7], postorder = [9,15,7,20,3]
+Output: [3,9,20,null,null,15,7]
+Example 2:
+
+Input: inorder = [-1], postorder = [-1]
+Output: [-1]
+ 
+
+Constraints:
+
+1 <= inorder.length <= 3000
+postorder.length == inorder.length
+-3000 <= inorder[i], postorder[i] <= 3000
+inorder and postorder consist of unique values.
+Each value of postorder also appears in inorder.
+inorder is guaranteed to be the inorder traversal of the tree.
+postorder is guaranteed to be the postorder traversal of the tree.
+
+
+
+// optimal solution
+// t:O(n) sp:O(n)
+class Solution {
+    private:
+        TreeNode* f(int is,int ie,int ps,int pe,vector<int> &in,vector<int> &post,unordered_map<int,int> &m){
+            if(is>ie || ps>pe) return NULL;
+            TreeNode* root = new TreeNode(post[pe]);
+            int ind=m[root->val]-is;
+            TreeNode* left=f(is,is+ind-1,ps,ps+ind-1,in,post,m);
+            TreeNode* right = f(is+ind+1,ie,ps+ind,pe-1,in,post,m);
+            root->left=left;
+            root->right=right;
+            return root;
+        }
+    public:
+        TreeNode* buildTree(vector<int>& inorder, vector<int>& postorder) {
+            unordered_map<int,int> m;
+            int n=inorder.size();
+            for(int i=0;i<n; i++){
+                m[inorder[i]]=i;
+            }
+            return f(0,n-1,0,n-1,inorder,postorder,m);
+        }
+};
