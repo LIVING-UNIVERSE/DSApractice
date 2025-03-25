@@ -370,7 +370,8 @@ class Solution {
 };
     
 
-
+NOTE:whenever a target node is given in the question . Then we must have to store the parent of every child in the hash map. 
+As from target node we have to travel to the whole tree.
 
 
 //863. All Nodes Distance K in Binary Tree
@@ -668,4 +669,68 @@ class Solution {
             if(lh==rh) return (1<<lh)-1;
             return 1+countNodes(root->left)+countNodes(root->right);
         }
-    };
+};
+
+
+
+//105. Construct Binary Tree from Preorder and Inorder Traversal
+Solved
+Medium
+Topics
+Companies
+Microsoft
+Bloomberg
+Google
+Amazon
+Uber
+Given two integer arrays preorder and inorder where preorder is the preorder traversal of a binary tree and inorder is the inorder traversal of the same tree, construct and return the binary tree.
+
+ 
+
+Example 1:
+
+
+Input: preorder = [3,9,20,15,7], inorder = [9,3,15,20,7]
+Output: [3,9,20,null,null,15,7]
+Example 2:
+
+Input: preorder = [-1], inorder = [-1]
+Output: [-1]
+ 
+
+Constraints:
+
+1 <= preorder.length <= 3000
+inorder.length == preorder.length
+-3000 <= preorder[i], inorder[i] <= 3000
+preorder and inorder consist of unique values.
+Each value of inorder also appears in preorder.
+preorder is guaranteed to be the preorder traversal of the tree.
+inorder is guaranteed to be the inorder traversal of the tree.
+
+
+
+//optimal solution
+// t:O(n) sp:O(n)
+class Solution {
+    private:
+        TreeNode* f(int ps, int pe,int is,int ie,vector<int>&pre, vector<int> &in, unordered_map<int,int> &m){
+            if(ps>pe || is>ie) return NULL;
+            TreeNode* root = new TreeNode(pre[ps]);
+            int ind= m[pre[ps]]-is;
+            TreeNode* left = f(ps+1,ps+ind,is,is+ind-1,pre,in,m);
+            TreeNode* right =f(ps+ind+1,pe,is+ind+1,ie,pre,in,m);
+            root->left=left;
+            root->right=right;
+            return root;
+        }
+    public:
+        TreeNode* buildTree(vector<int>& preorder, vector<int>& inorder) {
+            unordered_map<int,int> m;
+            int n=preorder.size();
+            for(int i=0;i<n; i++){
+                m[inorder[i]]=i;
+            }
+            return f(0,n-1,0,n-1,preorder,inorder,m);
+        }
+};
