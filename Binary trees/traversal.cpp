@@ -53,6 +53,7 @@ Follow up: Recursive solution is trivial, could you do it iteratively?
 
 
 // recursive solution
+// t:O(n) sp:O(h)
 /**
  * Definition for a binary tree node.
  * struct TreeNode {
@@ -79,7 +80,10 @@ public:
         return arr;
     }
 };
+
+
 // iterative solution
+// t:O(n) sp:O(n)
 // using stack
 class Solution {
     public:
@@ -98,6 +102,44 @@ class Solution {
             return ans;
         }
 };
+
+
+// morris preorder traversal
+// t:O(n) sp:O(1)
+class Solution {
+    public:
+        vector<int> preorderTraversal(TreeNode* root) {
+            vector<int> ans;
+            if(!root) return ans;
+            TreeNode* curr=root;
+            while(curr){
+                if(!curr->left){
+                    ans.push_back(curr->val);
+                    curr=curr->right;
+                }
+                else{
+                    TreeNode* temp=curr->left;
+                    while(temp->right && temp->right!=curr){
+                        temp=temp->right;
+                    }
+                    if(temp->right==NULL){
+                        temp->right=curr;
+                        ans.push_back(curr->val);
+                        curr=curr->left;
+                    }
+                    else{
+                        temp->right=NULL;
+                        curr=curr->right;
+                    }
+                }
+            }
+            return ans;
+        }
+};
+
+
+
+
 
 
 
@@ -158,7 +200,8 @@ Follow up: Recursive solution is trivial, could you do it iteratively?
 
 
 
-// solution
+// recursive solution
+// t:O(n) sp:O(h)
 class Solution {
     private:
         void f(TreeNode* root,vector<int> &arr){
@@ -173,9 +216,46 @@ class Solution {
             f(root,arr);
             return arr;
         }
-    };
+};
+
+// iterative solution
+// t:O(n) sp:O(n)
 
 
+
+
+// morris inorder traversal
+// t:O(n) sp:O(1)
+class Solution {
+    public:
+        vector<int> inorderTraversal(TreeNode* root) {
+            vector<int> ans;
+            if(!root) return ans;
+            TreeNode* curr= root;
+            while(curr){
+                if(!curr->left){
+                    ans.push_back(curr->val);
+                    curr=curr->right;
+                }
+                else{
+                    TreeNode* temp=curr->left;
+                    while(temp->right && temp->right!=curr){
+                        temp=temp->right;
+                    }
+                    if(temp->right==NULL){
+                        temp->right=curr;
+                        curr=curr->left;
+                    }
+                    else{
+                        temp->right=NULL;
+                        ans.push_back(curr->val);
+                        curr=curr->right;
+                    }
+                }
+            }
+            return ans;
+        }
+};
 
 
 // 145. Binary Tree Postorder Traversal
