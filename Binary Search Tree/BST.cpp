@@ -471,3 +471,104 @@ class Solution {
             return -1; // If k is out of range
         }
 };
+
+
+
+
+//235. Lowest Common Ancestor of a Binary Search Tree
+Solved
+Medium
+Topics
+Companies
+LinkedIn
+Facebook
+Amazon
+Apple
+Google
+Given a binary search tree (BST), find the lowest common ancestor (LCA) node of two given nodes in the BST.
+
+According to the definition of LCA on Wikipedia: “The lowest common ancestor is defined between two nodes p and q as the lowest node in T that has both p and q as descendants (where we allow a node to be a descendant of itself).”
+
+ 
+
+Example 1:
+
+
+Input: root = [6,2,8,0,4,7,9,null,null,3,5], p = 2, q = 8
+Output: 6
+Explanation: The LCA of nodes 2 and 8 is 6.
+Example 2:
+
+
+Input: root = [6,2,8,0,4,7,9,null,null,3,5], p = 2, q = 4
+Output: 2
+Explanation: The LCA of nodes 2 and 4 is 2, since a node can be a descendant of itself according to the LCA definition.
+Example 3:
+
+Input: root = [2,1], p = 2, q = 1
+Output: 2
+ 
+
+Constraints:
+
+The number of nodes in the tree is in the range [2, 105].
+-109 <= Node.val <= 109
+All Node.val are unique.
+p != q
+p and q will exist in the BST.
+
+
+
+// brute force
+// t:O(n) sp:O(h)
+class Solution {
+    public:
+        TreeNode* lowestCommonAncestor(TreeNode* root, TreeNode* p, TreeNode* q) {
+            if(root==NULL) return NULL;
+            if(root->val==p->val || root->val==q->val) return root;
+            TreeNode* left=lowestCommonAncestor(root->left,p,q);
+            TreeNode* right=lowestCommonAncestor(root->right,p,q);
+            if(right && left) return root;
+            if(right || left){
+                return (left)?left:right;
+            }
+            return NULL;
+        }
+};
+
+
+// optimal solution
+// t:O(h) sp:O(1)
+class Solution {
+    public:
+        TreeNode* lowestCommonAncestor(TreeNode* root, TreeNode* p, TreeNode* q) {
+            if(root==NULL) return NULL;
+            if(root->val>p->val && root->val>q->val){
+                return lowestCommonAncestor(root->left,p,q);
+            }
+            else if(root->val<p->val && root->val<q->val){
+                return lowestCommonAncestor(root->right,p,q);
+            }
+            return root;
+        }
+};
+
+// or
+class Solution {
+    public:
+        TreeNode* lowestCommonAncestor(TreeNode* root, TreeNode* p, TreeNode* q) {
+            if(p->val>q->val) return  lowestCommonAncestor(root,q,p);
+            TreeNode* curr=root;
+            while(curr){
+                if(curr->val==p->val || curr->val==q->val) return curr;
+                if(p->val<curr->val && q->val > curr->val) return curr;
+                else if(p->val<curr->val || q->val<curr->val){
+                    curr=curr->left;
+                }
+                else{
+                    curr=curr->right;
+                }
+            }
+            return NULL;
+        }
+};
