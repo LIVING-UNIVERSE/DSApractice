@@ -572,3 +572,84 @@ class Solution {
             return NULL;
         }
 };
+
+
+
+//98. Validate Binary Search Tree
+Solved
+Medium
+Topics
+Companies
+Given the root of a binary tree, determine if it is a valid binary search tree (BST).
+
+A valid BST is defined as follows:
+
+The left subtree of a node contains only nodes with keys less than the node's key.
+The right subtree of a node contains only nodes with keys greater than the node's key.
+Both the left and right subtrees must also be binary search trees.
+ 
+
+Example 1:
+
+
+Input: root = [2,1,3]
+Output: true
+Example 2:
+
+
+Input: root = [5,1,4,null,null,3,6]
+Output: false
+Explanation: The root node's value is 5 but its right child's value is 4.
+ 
+
+Constraints:
+
+The number of nodes in the tree is in the range [1, 104].
+-231 <= Node.val <= 231 - 1
+
+
+// optimal solution
+// t:O(n) sp:O(h)
+class Solution {
+    private:
+        bool f(TreeNode* root ,long mini,long maxi){
+            if(root==NULL) return true;
+            if(root->val<=mini || root->val>=maxi) return false;
+            bool left=f(root->left,mini,root->val);
+            bool right=f(root->right,root->val,maxi);
+            return (left && right);
+        }
+    public:
+        bool isValidBST(TreeNode* root) {
+            return f(root,LONG_MIN,LONG_MAX);
+        }
+};
+
+// 2nd approach
+// t:O(n) sp:O(h)
+class Solution {
+    private:
+        pair<bool,pair<int,int>> f(TreeNode* root){
+            int lmax=root->val,lmin=root->val;
+            int rmax=root->val,rmin=root->val;
+            if(root->left){
+                auto p=f(root->left);
+                bool left=p.first;
+                lmin=p.second.first;
+                lmax=p.second.second;
+                if(!left || lmax>=root->val) return {false,{lmin,rmax}};
+            }
+            if(root->right){
+                auto p=f(root->right);
+                bool right=p.first;
+                rmin=p.second.first;
+                rmax=p.second.second;
+                if(!right || rmin<=root->val) return {false,{lmin,rmax}};
+            }
+            return {true,{lmin,rmax}};
+        }
+    public:
+        bool isValidBST(TreeNode* root) {
+            return f(root).first;
+        }
+    };
