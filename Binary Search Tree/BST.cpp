@@ -652,4 +652,92 @@ class Solution {
         bool isValidBST(TreeNode* root) {
             return f(root).first;
         }
-    };
+};
+
+
+
+//1008. Construct Binary Search Tree from Preorder Traversal
+Solved
+1563
+Medium
+Topics
+Companies
+Amazon
+Microsoft
+Facebook
+Bloomberg
+Given an array of integers preorder, which represents the preorder traversal of a BST (i.e., binary search tree), construct the tree and return its root.
+
+It is guaranteed that there is always possible to find a binary search tree with the given requirements for the given test cases.
+
+A binary search tree is a binary tree where for every node, any descendant of Node.left has a value strictly less than Node.val, and any descendant of Node.right has a value strictly greater than Node.val.
+
+A preorder traversal of a binary tree displays the value of the node first, then traverses Node.left, then traverses Node.right.
+
+ 
+
+Example 1:
+
+
+Input: preorder = [8,5,1,7,10,12]
+Output: [8,5,10,1,7,null,12]
+Example 2:
+
+Input: preorder = [1,3]
+Output: [1,null,3]
+ 
+
+Constraints:
+
+1 <= preorder.length <= 100
+1 <= preorder[i] <= 1000
+All the values of preorder are unique.
+
+
+
+// brute force
+// t:O(nlogn) sp:O(n)
+class Solution {
+    private:
+        TreeNode* f(int is,int ie,int ps,int pe,vector<int> &in,vector<int> &pre,unordered_map<int,int> &m){
+            if(is>ie || ps>pe) return NULL;
+            TreeNode* root= new TreeNode(pre[ps]);
+            int ind= m[root->val]-is;
+            TreeNode* left= f(is,is+ind-1,ps+1,ps+ind,in,pre,m);
+            TreeNode* right= f(is+ind+1,ie,ps+ind+1,pe,in,pre,m);
+            root->left=left;
+            root->right=right;
+            return root;
+        }
+    public:
+        TreeNode* bstFromPreorder(vector<int>& pre) {
+            vector<int> in=pre;
+            sort(in.begin(),in.end());
+            unordered_map<int,int> m;
+            for(int i=0;i<in.size();i++){
+                m[in[i]]=i;
+            }
+            return f(0,in.size()-1,0,pre.size()-1,in,pre,m);
+        }
+};
+
+
+
+// optimal solution
+// t:O(n) sp:O(h)
+class Solution {
+    private:
+        TreeNode* f(int &ind, int ub,vector<int> &arr){
+            if(ind>=arr.size() || arr[ind]>ub) return NULL;
+            TreeNode* root= new TreeNode(arr[ind]);
+            ind++;
+            root->left= f(ind,root->val,arr);
+            root->right=f(ind,ub,arr);
+            return root;
+        }
+    public:
+        TreeNode* bstFromPreorder(vector<int>& preorder) {
+            int ind=0;
+            return f(ind,INT_MAX,preorder);
+        }
+};
