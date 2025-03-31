@@ -971,4 +971,125 @@ class BSTIterator {
             return (!st.empty());
         }
 };
+
+
+
+
+//653. Two Sum IV - Input is a BST
+Solved
+Easy
+Topics
+Companies
+Given the root of a binary search tree and an integer k, return true if there exist two elements in the BST such that their sum is equal to k, or false otherwise.
+
+ 
+
+Example 1:
+
+
+Input: root = [5,3,6,2,4,null,7], k = 9
+Output: true
+Example 2:
+
+
+Input: root = [5,3,6,2,4,null,7], k = 28
+Output: false
+ 
+
+Constraints:
+
+The number of nodes in the tree is in the range [1, 104].
+-104 <= Node.val <= 104
+root is guaranteed to be a valid binary search tree.
+-105 <= k <= 105
+
+
+
+// brute force
+//t :O(n) sp:O(n)
+class Solution {
+    private:
+        void f(TreeNode* root,vector<int> &v){
+            if(root==NULL) return ;
+            f(root->left,v);
+            v.push_back(root->val);
+            f(root->right,v);
+        }
+    public:
+        bool findTarget(TreeNode* root, int k) {
+            vector<int> v;
+            f(root,v);
+            int n=v.size();
+            int l=0,r=n-1;
+            while(l<r){
+                if(v[l]+v[r]==k) return true;
+                else if(v[l]+v[r]<k) l++;
+                else{
+                    r--;
+                }
+            }
+            return false;           
+        }
+};
     
+
+// optimal solution
+// t:O(n) sp:O(2*log(n))
+class Solution {
+    private:
+        void pref(){
+            TreeNode* temp=pre.top();
+            pre.pop();
+            if(temp->right){
+                TreeNode* curr=temp->right;
+                while(curr){
+                    pre.push(curr);
+                    curr=curr->left;
+                }
+            }
+        }
+        void postf(){
+            TreeNode* temp=post.top();
+            post.pop();
+            if(temp->left){
+                TreeNode* curr=temp->left;
+                while(curr){
+                    post.push(curr);
+                    curr=curr->right;
+                }
+            }
+        }
+    public:
+        stack <TreeNode*> pre;
+        stack <TreeNode*> post;
+        bool findTarget(TreeNode* root, int k) {
+            TreeNode* curr=root;
+            while(curr){
+                pre.push(curr);
+                curr=curr->left;
+            }
+            curr=root;
+            while(curr){
+                post.push(curr);
+                curr=curr->right;
+            }
+            while(!pre.empty() && !post.empty()){
+                TreeNode* preNode= pre.top();
+                TreeNode* postNode=post.top();
+                if(preNode->val+postNode->val>k){
+                    postf();
+                }
+                else if(preNode->val+postNode->val==k && preNode==postNode){
+                    postf();
+                    pref();
+                }
+                else if(preNode->val+postNode->val==k && preNode!=postNode){
+                    return true;
+                }
+                else{
+                    pref();
+                }
+            }
+            return false;
+        }
+};
