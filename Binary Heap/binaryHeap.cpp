@@ -124,3 +124,63 @@ void MinHeap::MinHeapify(int i)
         MinHeapify(smallest);
     }
 }
+
+
+
+//Heap Sort
+Difficulty: MediumAccuracy: 53.06%Submissions: 122K+Points: 4Average Time: 20m
+Given an array arr[]. The task is to sort the array elements by Heap Sort.
+
+Examples:
+
+Input: arr[] = [4, 1, 3, 9, 7]
+Output: [1, 3, 4, 7, 9]
+Explanation: After sorting elements using heap sort, elements will be in order as 1, 3, 4, 7, 9.
+Input: arr[] = [10, 9, 8, 7, 6, 5, 4, 3, 2, 1]
+Output: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+Explanation: After sorting elements using heap sort, elements will be in order as 1, 2, 3, 4, 5, 6, 7, 8, 9, 10.
+Input: arr[] = [2, 1, 5]
+Output: [1, 2, 5]
+Explanation: After sorting elements using heap sort, elements will be in order as 1, 2, 5.
+Constraints:
+1 ≤ arr.size() ≤ 106
+1 ≤ arr[i] ≤ 106
+
+
+
+// solution
+// The functions should be written in a way that array become sorted
+// in increasing order when heapSort() is called.
+
+class Solution {
+    private:
+      void buildHeap(vector<int> &arr,int size){
+          for(int i=(size-2)/2; i>=0;i--){
+              maxHeapify(i,size,arr);
+          }
+      }
+      void maxHeapify(int i,int size,vector<int> &arr){
+          int left=2*i+1,right=2*i+2;
+          int largest=i;
+          if(left<size && arr[left]>arr[largest]){
+              largest=left;
+          }
+          if(right<size && arr[right]>arr[largest]){
+              largest=right;
+          }
+          if(largest!=i){
+              swap(arr[largest],arr[i]);
+              maxHeapify(largest,size,arr);
+          }
+      }
+    public:
+      // Function to sort an array using Heap Sort.
+      void heapSort(vector<int>& arr) {
+          int n=arr.size();
+          buildHeap(arr,n);
+          for(int i=n-1;i>=1;i--){
+              swap(arr[0],arr[i]);
+              maxHeapify(0,i,arr);
+          }
+      }
+  };
