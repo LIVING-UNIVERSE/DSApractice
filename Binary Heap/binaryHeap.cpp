@@ -318,3 +318,94 @@ class Solution {
             return -1;
         }
 };
+
+
+
+//Kth Smallest
+Difficulty: MediumAccuracy: 35.17%Submissions: 685K+Points: 4Average Time: 25m
+Given an array arr[] and an integer k where k is smaller than the size of the array, your task is to find the kth smallest element in the given array.
+
+Follow up: Dont solve it using the inbuilt sort function.
+
+Examples :
+
+Input: arr[] = [7, 10, 4, 3, 20, 15], k = 3
+Output: 7
+Explanation: 3rd smallest element in the given array is 7.
+Input: arr[] = [2, 3, 1, 20, 15], k = 4 
+Output: 15
+Explanation: 4th smallest element in the given array is 15.
+Constraints:
+1 <= arr.size <= 106
+1<= arr[i] <= 106
+1 <= k <= n
+
+
+// better solution
+class Solution {
+    public:
+      // arr : given array
+      // k : find kth smallest element and return using this function
+      int kthSmallest(vector<int> &arr, int k) {
+          // code here
+          int n=arr.size();
+          priority_queue<int,vector<int>> pq;
+          for(int i=0;i<k;i++){
+              pq.push(arr[i]);
+          }
+          for(int i=k;i<n;i++){
+              if(pq.top()>arr[i]){
+                  pq.pop();
+                  pq.push(arr[i]);
+              }
+          }
+          return pq.top();
+      }
+};
+
+
+// optimal solution
+
+// User function template for C++
+
+class Solution {
+    private:
+      int f(vector<int> &arr, int low,int high){
+          int n=arr.size();
+          int pivot=high;
+          int i=low,j=high-1;
+          while(i<=j){
+              while(i<=high-1 && arr[i]<arr[pivot]){
+                  i++;
+              }
+              while(j>=low && arr[j]>arr[pivot]){
+                  j--;
+              }
+              if(i<=j){
+                  swap(arr[i],arr[j]);i++;j--;
+              }
+          }
+          swap(arr[i],arr[pivot]);
+          return i;
+      }
+    public:
+      // arr : given array
+      // k : find kth smallest element and return using this function
+      int kthSmallest(vector<int> &arr, int k) {
+          // code here
+          int n=arr.size();
+          int low=0,high=n-1;
+          int pivot;
+          while(true){
+              pivot=f(arr,low,high);
+              if(pivot==k-1) return arr[pivot];
+              else if(pivot>k-1){
+                  high=pivot-1;
+              }
+              else{
+                  low=pivot+1;
+              }
+          }
+          return -1;
+      }
+};
