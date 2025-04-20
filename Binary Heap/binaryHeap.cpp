@@ -183,4 +183,138 @@ class Solution {
               maxHeapify(0,i,arr);
           }
       }
-  };
+};
+
+
+
+//215. Kth Largest Element in an Array
+Solved
+Medium
+Topics
+Companies
+Facebook
+Amazon
+LinkedIn
+Microsoft
+Google
+Given an integer array nums and an integer k, return the kth largest element in the array.
+
+Note that it is the kth largest element in the sorted order, not the kth distinct element.
+
+Can you solve it without sorting?
+
+ 
+
+Example 1:
+
+Input: nums = [3,2,1,5,6,4], k = 2
+Output: 5
+Example 2:
+
+Input: nums = [3,2,3,1,2,4,5,5,6], k = 4
+Output: 4
+ 
+
+Constraints:
+
+1 <= k <= nums.length <= 105
+-104 <= nums[i] <= 104
+
+
+// brute force
+// t:O(logn) sp:O(1)
+class Solution {
+    public:
+        int findKthLargest(vector<int>& arr, int k) {
+            // brute force
+            int n=arr.size();
+            sort(arr.begin(),arr.end());
+            return arr[n-k];
+        }
+};
+
+
+
+// solution using heap
+// t:O(nlogn) sp:O(n)
+class Solution {
+    public:
+        int findKthLargest(vector<int>& arr, int k) {
+            int n=arr.size();
+            priority_queue<int,vector<int>> q;
+            for(int i=0;i<n;i++){
+                q.push(arr[i]);
+            }
+            int count=1;
+            while(count<k){
+                q.pop();count++;
+            }
+            return q.top();
+        }
+};
+
+
+
+// better solution
+// t:O(nlogk) sp:O(k)
+class Solution {
+    public:
+        int findKthLargest(vector<int>& arr, int k) {
+            // better solution
+            // t:O(nlogk) sp:O(k)
+            int n=arr.size();
+            priority_queue<int,vector<int>,greater<int>> pq;
+            for(int i=0;i<k;i++){
+                pq.push(arr[i]);
+            }
+            for(int i=k;i<n;i++){
+                if(arr[i]>pq.top()){
+                    pq.pop();
+                    pq.push(arr[i]);
+                }
+            }
+            return pq.top();
+        }
+};
+
+
+
+// optimal solution
+class Solution {
+    private:
+        int f(vector<int> &arr, int low,int high){
+            int n=arr.size();
+            int pivot=high;
+            int i=low,j=high-1;
+            while(i<=j){
+                while(i<=high-1 && arr[i]<arr[pivot]){
+                    i++;
+                }
+                while(j>=low && arr[j]>arr[pivot]){
+                    j--;
+                }
+                if(i<=j){
+                    swap(arr[i],arr[j]);i++;j--;
+                }
+            }
+            swap(arr[i],arr[pivot]);
+            return i;
+        }
+    public:
+        int findKthLargest(vector<int>& arr, int k) {
+            int n=arr.size();
+            int low=0,high=n-1;
+            int pivot;
+            while(true){
+                pivot=f(arr,low,high);
+                if(pivot==n-k) return arr[pivot];
+                else if(pivot>n-k){
+                    high=pivot-1;
+                }
+                else{
+                    low=pivot+1;
+                }
+            }
+            return -1;
+        }
+};
