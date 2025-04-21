@@ -472,3 +472,163 @@ class Solution {
           }
       }
 };
+
+
+
+//23. Merge k Sorted Lists
+Solved
+Hard
+Topics
+Companies
+Facebook
+Amazon
+Microsoft
+Apple
+Google
+You are given an array of k linked-lists lists, each linked-list is sorted in ascending order.
+
+Merge all the linked-lists into one sorted linked-list and return it.
+
+ 
+
+Example 1:
+
+Input: lists = [[1,4,5],[1,3,4],[2,6]]
+Output: [1,1,2,3,4,4,5,6]
+Explanation: The linked-lists are:
+[
+  1->4->5,
+  1->3->4,
+  2->6
+]
+merging them into one sorted list:
+1->1->2->3->4->4->5->6
+Example 2:
+
+Input: lists = []
+Output: []
+Example 3:
+
+Input: lists = [[]]
+Output: []
+ 
+
+Constraints:
+
+k == lists.length
+0 <= k <= 104
+0 <= lists[i].length <= 500
+-104 <= lists[i][j] <= 104
+lists[i] is sorted in ascending order.
+The sum of lists[i].length will not exceed 104.
+
+
+// brute force
+// t:O(n*k) sp:O(1)
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode() : val(0), next(nullptr) {}
+ *     ListNode(int x) : val(x), next(nullptr) {}
+ *     ListNode(int x, ListNode *next) : val(x), next(next) {}
+ * };
+ */
+class Solution {
+private:
+    ListNode* f(ListNode* head1, ListNode* head2){
+        ListNode* curr1=head1;
+        ListNode* curr2=head2;
+        ListNode* temp= new ListNode(-1);
+        ListNode* dummy=temp;
+        while(curr1 && curr2){
+            if(curr1->val<curr2->val){
+                dummy->next=curr1;
+                curr1=curr1->next;
+            }
+            else{
+                dummy->next=curr2;
+                curr2=curr2->next;
+            }
+            dummy=dummy->next;
+        }
+        while(curr1){
+            dummy->next=curr1;
+            curr1=curr1->next;
+            dummy=dummy->next;
+        }
+        while(curr2){
+            dummy->next=curr2;
+            curr2=curr2->next;
+            dummy=dummy->next;
+        }
+        return temp->next;
+    }
+public:
+    ListNode* mergeKLists(vector<ListNode*>& arr) {
+        int n=arr.size();
+        ListNode* node= new ListNode(-1e8);
+        for(int i=0;i<n;i++){
+            if(arr[i]){
+                node= f(node,arr[i]);
+            }
+        }
+        return node->next;
+    }
+};
+
+
+// better solution
+// t:O(nlogn) sp:O(n)
+class Solution {
+    public:
+        ListNode* mergeKLists(vector<ListNode*>& arr) {
+            int n=arr.size();
+            vector<int> v;
+            for(int i=0;i<n;i++){
+                ListNode* curr= arr[i];
+                while(curr){
+                    v.push_back(curr->val);
+                    curr=curr->next;
+                }
+            }
+            sort(v.begin(),v.end());
+            ListNode* temp=  new ListNode(-1);
+            ListNode* curr=temp;
+            for(int i=0;i<v.size();i++){
+                ListNode* node= new ListNode(v[i]);
+                curr->next=node;
+                curr=curr->next;
+            }
+            return temp->next;
+        }
+};
+
+
+// optimal solution
+// t:O(nlogk) sp:O(k)
+class Solution {
+    public:
+        ListNode* mergeKLists(vector<ListNode*>& arr) {
+            int n=arr.size();
+            priority_queue<pair<int,ListNode*>,vector<pair<int,ListNode*>>,greater<pair<int,ListNode*>>> pq;
+            for(int i=0;i<n;i++){
+                if(arr[i]){
+                    pq.push({arr[i]->val,arr[i]});
+                }
+            }
+            ListNode* dummy = new ListNode(-1);
+            ListNode* temp = dummy;
+            while(!pq.empty()){
+                auto [val,node] = pq.top();
+                pq.pop();
+                temp->next=node;
+                temp=temp->next;
+                if(node->next){
+                    pq.push({node->next->val,node->next});
+                }
+            }
+            return dummy->next;
+        }
+};
