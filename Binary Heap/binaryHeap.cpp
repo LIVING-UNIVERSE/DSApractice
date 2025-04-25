@@ -864,3 +864,70 @@ class Solution {
         }
 };
 
+
+
+//846. Hand of Straights
+Solved
+1565
+Medium
+Topics
+Companies
+Alice has some number of cards and she wants to rearrange the cards into groups so that each group is of size groupSize, and consists of groupSize consecutive cards.
+
+Given an integer array hand where hand[i] is the value written on the ith card and an integer groupSize, return true if she can rearrange the cards, or false otherwise.
+
+ 
+
+Example 1:
+
+Input: hand = [1,2,3,6,2,3,4,7,8], groupSize = 3
+Output: true
+Explanation: Alice's hand can be rearranged as [1,2,3],[2,3,4],[6,7,8]
+Example 2:
+
+Input: hand = [1,2,3,4,5], groupSize = 4
+Output: false
+Explanation: Alice's hand can not be rearranged into groups of 4.
+
+ 
+
+Constraints:
+
+1 <= hand.length <= 104
+0 <= hand[i] <= 109
+1 <= groupSize <= hand.length
+
+
+// solution
+// t:O(n) sp:O(n)
+class Solution {
+    public:
+        bool isNStraightHand(vector<int>& arr, int k) {
+            int n=arr.size();
+            map<int,int> m;
+            for(int i=0;i<n;i++){
+                m[arr[i]]++;
+            }
+            while(!m.empty()){
+                if(m.size()<k) return false;
+                auto it=m.begin();
+                int prev=it->first;
+                it++;
+                for(int i=1;i<k;i++){
+                    if(it->first!=prev+1) return false;
+                    prev=it->first;
+                    it++;
+                }
+                it=m.begin();
+                for(int i=0;i<k;i++){
+                    it->second--;
+                    if(it->second==0){
+                        m.erase(it);
+                    }
+                    it++;
+                }
+            }
+            return true;
+        }
+};
+
