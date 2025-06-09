@@ -309,3 +309,132 @@ int main() {
 
     return 0;
 }
+
+
+
+// reader write problem
+#include <iostream>
+#include <thread>
+#include <semaphore.h>
+#include <unistd.h>  // for sleep()
+#include <mutex>
+
+using namespace std;
+
+sem_t wrt;           // Semaphore for writer
+mutex readMutex;     // Mutex to protect readCount
+int readCount = 0;   // Number of active readers
+
+void reader(int id) {
+    while (true) {
+        // Entry section
+        readMutex.lock();
+        readCount++;
+        if (readCount == 1)
+            sem_wait(&wrt);  // First reader locks writer
+        readMutex.unlock();
+
+        // Critical Section (Reading)
+        cout << "Reader " << id << " is reading\n";
+        sleep(1);
+
+        // Exit section
+        readMutex.lock();
+        readCount--;
+        if (readCount == 0)
+            sem_post(&wrt);  // Last reader unlocks writer
+        readMutex.unlock();
+
+        sleep(1);  // Simulate delay before next read
+    }
+}
+
+void writer(int id) {
+    while (true) {
+        // Entry section
+        sem_wait(&wrt);  // Lock access for all readers/writers
+
+        // Critical Section (Writing)
+        cout << "Writer " << id << " is writing\n";
+        sleep(2);
+
+        // Exit section
+        sem_post(&wrt);  // Unlock for others
+
+        sleep(2);  // Simulate delay before next write
+    }
+}
+
+int main() {
+    sem_init(&wrt, 0, 1);
+
+    thread r1(reader, 1);
+    thread r2(reader, 2);
+    thread w1(writer, 1);
+    thread r3(reader, 3);
+
+    r1.join();
+    r2.join();
+    w1.join();
+    r3.join();
+
+    sem_destroy(&wrt);
+    return 0;
+}
+
+
+// philosophers dining problem with odd-even
+#include <iostream>
+#include <thread>
+#include <mutex>
+#include <vector>
+#include <chrono>
+
+using namespace std;
+
+const int NUM_PHILOSOPHERS = 5;
+mutex forks[NUM_PHILOSOPHERS];  // One mutex for each fork
+
+void philosopher(int id) {
+    int left = id;
+    int right = (id + 1) % NUM_PHILOSOPHERS;
+
+    for (int i = 0; i < 3; ++i) {  // Each philosopher eats 3 times
+        // Thinking
+        cout << "Philosopher " << id << " is thinking.\n";
+        this_thread::sleep_for(chrono::milliseconds(1000));
+
+        // To avoid deadlock, pick up lower-numbered fork first
+        if (id % 2 == 0) {
+            forks[left].lock();
+            forks[right].lock();
+        } else {
+            forks[right].lock();
+            forks[left].lock();
+        }
+
+        // Eating
+        cout << "Philosopher " << id << " is eating.\n";
+        this_thread::sleep_for(chrono::milliseconds(1500));
+
+        // Put down forks
+        forks[left].unlock();
+        forks[right].unlock();
+
+        cout << "Philosopher " << id << " has finished eating.\n";
+    }
+}
+
+int main() {
+    vector<thread> philosophers;
+
+    for (int i = 0; i < NUM_PHILOSOPHERS; ++i) {
+        philosophers.push_back(thread(philosopher, i));
+    }
+
+    for (auto& t : philosophers) {
+        t.join();
+    }
+
+    return 0;
+}
