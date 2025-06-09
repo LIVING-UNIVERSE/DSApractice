@@ -245,3 +245,67 @@ int main() {
 
 
 
+// producer consumer problem
+#include <iostream>
+#include <thread>
+#include <semaphore.h>
+#include <queue>
+#include <unistd.h>     // for sleep()
+#include <mutex>
+
+using namespace std;
+
+const int BUFFER_SIZE = 5;
+queue<int> buffer;
+
+sem_t emptySlots;
+sem_t fullSlots;
+mutex mtx;
+
+void producer(int id) {
+    for (int i = 0; i < 10; ++i) {
+        sem_wait(&emptySlots);           // Wait for empty slot
+
+        {
+            lock_guard<mutex> lock(mtx); // Lock buffer
+            buffer.push(i);
+            cout << "Producer " << id << " produced: " << i << endl;
+        }
+
+        sem_post(&fullSlots);            // Signal full slot
+        sleep(1);
+    }
+}
+
+void consumer(int id) {
+    for (int i = 0; i < 10; ++i) {
+        sem_wait(&fullSlots);            // Wait for filled slot
+
+        int item;
+        {
+            lock_guard<mutex> lock(mtx); // Lock buffer
+            item = buffer.front();
+            buffer.pop();
+            cout << "Consumer " << id << " consumed: " << item << endl;
+        }
+
+        sem_post(&emptySlots);           // Signal empty slot
+        sleep(2);
+    }
+}
+
+int main() {
+    sem_init(&emptySlots, 0, BUFFER_SIZE);
+    sem_init(&fullSlots, 0, 0);
+
+    thread p1(producer, 1);
+    thread c1(consumer, 1);
+
+    p1.join();
+    c1.join();
+
+    sem_destroy(&emptySlots);
+    sem_destroy(&fullSlots);
+
+    return 0;
+}
